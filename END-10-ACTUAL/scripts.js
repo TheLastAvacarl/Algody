@@ -65,6 +65,17 @@ let isOutputVisible = false;
         //     }
         // });
 
+
+        function getFileContent(files) {
+            if (files && files.length > 0) {
+                const fileContent = files[0].content;
+                console.log('File content:', fileContent);
+            } else {
+                console.log('No files available.');
+            }
+        }
+
+
         window.onmessage = function (e) {
             console.log('Received message:', e.data);
             
@@ -80,6 +91,9 @@ let isOutputVisible = false;
                 if (e.data.result.success) {
                     previousError = ''; // Clear previous errors
                     previousOutput = e.data.result.output; // Store output
+
+                     // Get file content // code
+                    getFileContent(e.data.files);
         
                     // Show output and hide error
                     outputHeader.textContent = 'Output';
