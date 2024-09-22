@@ -1,0 +1,271 @@
+:root {
+  --border-color: #291D4D;
+  --dialog-background: #FFF3B4;
+  --menu-background: #FFE8D2;
+  --menu-border-color: #A48465;
+  --menu-font-color: #3A160D;
+  --menu-selected-background: #7fc2ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #333;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.main-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px;
+  flex-wrap: wrap;
+}
+
+.game-wrapper {
+  flex-shrink: 0;
+  width: calc(352px * 3);
+  height: calc(198px * 3);
+  position: relative;
+  margin-right: 20px;
+}
+
+.game-container {
+  width: 352px;
+  height: 198px;
+  background: skyblue;
+  transform: scale(3);
+  transform-origin: top left;
+}
+
+.game-container canvas {
+  image-rendering: pixelated;
+  position: absolute;
+  left: 23%;
+  top: 10%;
+}
+
+@media (max-width: 1200px) {
+  .game-wrapper {
+    width: calc(352px * 2);
+    height: calc(198px * 2);
+  }
+
+  .game-container {
+    transform: scale(2);
+  }
+
+  .code-iframe {
+    width: calc(100% - (352px * 2) - 40px);
+  }
+}
+
+@media (max-width: 800px) {
+  .main-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .game-wrapper {
+    width: calc(352px * 1.5);
+    height: calc(198px * 1.5);
+    margin-bottom: 20px;
+  }
+
+  .game-container {
+    transform: scale(1.5);
+  }
+
+  .code-iframe {
+    width: 100%;
+    margin: 0;
+    z-index: 2;
+  }
+}
+
+.iframe-container {
+  position: relative;
+  flex-grow: 1;
+  min-width: 500px;
+  z-index: 10;
+  height: calc(198px * 3);
+  
+}
+
+.expand-button {
+  position: absolute;
+  top: 55px;
+  left: 10px;
+  z-index: 10;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.block {
+  background: #e0e0e0;
+  margin: 5px 0 20px;
+  padding: 10px;
+  cursor: grab;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ccc;
+}
+
+.block:active {
+  cursor: grabbing;
+}
+
+.drawer {
+  width: 200px;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  background: #3c3c3c;
+  height: calc(198px * 3);
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  position: absolute;
+  right:calc(100% - (352px *3.57) - 40px);
+  top: 20px; /* Ensure the drawer starts at the top */
+  z-index: 5;
+  border-radius: 10px 0px 0px 10px;
+  box-shadow: black;
+}
+
+
+.drawer.closed {
+  transform: translateX(-100px);
+}
+
+.dropzone {
+  height: 500px;
+  width: 100%;
+  position: absolute;
+  top: 44px;
+  left: 0;
+  border: 2px dashed #aaa;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 10;
+}
+
+.indicator {
+  position: absolute;
+  left: -15px;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-left: 10px solid red;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  display: none;
+  z-index: 20;
+}
+
+.toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  z-index: 30;
+  margin-right: 16px;
+  height: 45px;
+}
+
+.toolbar button,
+.toolbar select {
+  margin-left: 10px;
+}
+
+.toolbar .drawer-button {
+  margin-right: auto;
+}
+
+.block-if {
+  background: #e0f7fa;
+}
+
+.block-while {
+  background: #e1bee7;
+}
+
+.block-comparison,
+.block-for {
+  background: #ffe0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.comparison-input,
+.for-input {
+  width: 100px;
+  margin: 5px;
+}
+
+.comparison-block-text,
+.for-block-text {
+  margin: 3px;
+}
+
+#operator {
+  width: 50px;
+}
+
+.output {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+h3 {
+  margin: 0;
+}
+
+.toggle-button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: blue;
+  text-decoration: underline;
+}
+
+.menu-container {
+  width: 100%;
+  height: 40px;
+  background: #4CAF50;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  margin-bottom: 5px;
+}
+
+.menu-container h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.menu-container p {
+  margin: 0;
+  font-size: 14px;
+}
+

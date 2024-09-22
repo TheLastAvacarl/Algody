@@ -1,0 +1,132 @@
+
+
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algo Ody</title>
+    <link href="/styles/global.css" type="text/css" rel="stylesheet">
+    <link href="/styles/TextMessage.css" type="text/css" rel="stylesheet">
+    <link href="/styles/SceneTransition.css" type="text/css" rel="stylesheet">
+    <link href="/styles/GameButtons.css" type="text/css" rel="stylesheet">
+
+    <style>
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="drawer">
+
+      <!-- CODE BLOCKS -->
+      <div class="block block-if" draggable="true" ondragstart="drag(event)" data-snippet="if">If Statement</div>
+      <div class="block block-while" draggable="true" ondragstart="drag(event)" data-snippet="while">While Loop</div>
+
+      <!-- FOR LOOP -->
+      <div class="block block-for" draggable="true" ondragstart="drag(event)" data-snippet="for">
+          <p  class="for-block-text">For Loop</p>
+          <input type="text" class="for-input" placeholder="Initialization" id="forInit" autocomplete="off">
+          <input type="text" class="for-input" placeholder="Condition" id="forCondition" autocomplete="off">
+          <input type="text" class="for-input" placeholder="Update" id="forUpdate" autocomplete="off">
+      </div>
+
+      <!-- LOGICAL OPERATORS -->
+      <div class="block block-comparison" draggable="true" data-snippet="comparison" ondragstart="drag(event)">
+          <p class="comparison-block-text">Logic Operator</p>
+          <input type="text" class="comparison-input" placeholder="Variable" id="firstOperand" autocomplete="off">
+          <select id="operator" class="comparison-input">
+              <option value="==">==</option>
+              <option value="!=">!=</option>
+              <option value="<"><</option>
+              <option value=">">></option>
+              <option value="<="><=</option>
+              <option value=">=">>=</option>
+          </select>
+          <input type="text" class="comparison-input" placeholder="Variable" id="secondOperand" autocomplete="off">
+      </div>
+  </div>
+
+
+    <div class="main-container">
+      <!-- Wrapper for scaling the game container -->
+      <div class="game-wrapper">
+        <div class="game-container">
+          <canvas class="game-canvas" width="352" height="198"></canvas>
+        </div>
+      </div>
+
+
+
+      <div class="iframe-container">
+
+
+        <div class="toolbar">
+          <button id="drawerToggle" class="drawer-button">Drawer</button>
+          <label>
+            <input type="checkbox" id="nextLineToggle">
+            Code for Next Line
+          </label>
+          <select id="languageSelect">
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="php">PHP</option>
+          </select>
+          <button id="runButton">Run</button>
+          <!-- <button id="toggleOutputButton" class="toggle-button">Show Output</button> -->
+        </div>
+        <iframe id="oc-editor"
+          src="https://onecompiler.com/embed?availableLanguages=cpp%2Cjava%2Cpython%2Cjavascript%2Cphp&hideNew=true&hideNewFileOption=true&hideTitle=true&hideStdin=true&theme=dark&listenToEvents=true&codeChangeEvent=true&fontSize=16&hideResult=true"
+          style="height: 100%; width: 100%; border: none;"></iframe>
+          
+        <div class="dropzone" id="dropzone" ondragover="allowDrop(event)" ondrop="drop(event)">
+          Drop blocks here
+        </div>
+        <div class="indicator" id="indicator"></div>
+
+        
+      </div>
+      
+
+    </div>
+    </div>
+
+    <div class="output">
+      <h3 id="outputHeader">Error Messages</h3>
+      <button id="toggleOutputButton" class="toggle-button">Show Output</button>
+      <pre id="errorOutput" style="color: red;"></pre>
+      <pre id="resultOutput" style="display: none;"></pre>
+  </div>
+  
+    <button id="startCutsceneButton">Start Cutscene</button>
+
+
+
+
+
+
+    <!-- Scripts -->
+    <script src="/scripts.js"></script>
+    <script src="/utils.js"></script>
+    <script src="/DirectionInput.js"></script>
+    <script src="/Overworld.js"></script>
+    <script src="/GameObject.js"></script>
+    <script src="/Person.js"></script>
+    <script src="/Item.js"></script>
+    <script src="/Sprite.js"></script>
+    <script src="/OverworldMap.js"></script>
+    <script src="/OverworldEvent.js"></script>
+    <script src="/TextMessage.js"></script>
+    <script src="/KeyPressListener.js"></script>
+    <script src="/RevealingText.js"></script>
+    <script src="/SceneTransition.js"></script>
+    <script src="/init.js"></script>
+
+  </body>
+
+  </html>
