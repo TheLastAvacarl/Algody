@@ -140,7 +140,7 @@ function generateItems(startX, startY, itemCount) {
       x: utils.withGrid(x),
       y: utils.withGrid(y),
       value: randomValue,
-      src: "/images/characters/boxes.png",
+      src: "images/characters/boxes.png",
     });
   }
   return items;
@@ -148,14 +148,14 @@ function generateItems(startX, startY, itemCount) {
 
 window.OverworldMaps = {
  Map1: {
-    lowerSrc: "/images/maps/DemoMap.png",
-    upperSrc: "/images/maps/DemoUpper.png",
+    lowerSrc: "images/maps/DemoMap.png",
+    upperSrc: "images/maps/DemoUpper.png",
     gameObjects: {
       hero: new Person({
         isPlayerControlled: true,
         x: utils.withGrid(6),
         y: utils.withGrid(4),
-        src: "/images/characters/people/demo.png",
+        src: "images/characters/people/demo.png",
         useShadow: true,
         useAnimation: true,
       }),
@@ -164,54 +164,54 @@ window.OverworldMaps = {
         x: utils.withGrid(2),
         y: utils.withGrid(7),
         value: 1,
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
       }),
       item1: new Item({
         x: utils.withGrid(3),
         y: utils.withGrid(7),
         value: 2,
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
       }),
       item2: new Item({
         x: utils.withGrid(4),
         y: utils.withGrid(7),
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
         value: 7,
       }),
       item3: new Item({
         x: utils.withGrid(5),
         y: utils.withGrid(7),
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
         value: 4,
       }),
       item4: new Item({
         x: utils.withGrid(6),
         y: utils.withGrid(7),
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
         value: 5,
       }),
       item5: new Item({
         x: utils.withGrid(7),
         y: utils.withGrid(7),
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
         value: 6,
       }),
       item6: new Item({
         x: utils.withGrid(8),
         y: utils.withGrid(7),
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
         value: 7,
       }),
       item7: new Item({
         x: utils.withGrid(9),
         y: utils.withGrid(7),
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
         value: 8,
       }),
       item8: new Item({
         x: utils.withGrid(10),
         y: utils.withGrid(7),
-        src: "/images/characters/boxes.png",
+        src: "images/characters/boxes.png",
         value: 9,
       }),
       
@@ -238,19 +238,19 @@ window.OverworldMaps = {
     }
   },
   Map2: {
-    lowerSrc: "/images/maps/PizzaShopBattle.png",
-    upperSrc: "/images/maps/KitchenUpper.png",
+    lowerSrc: "images/maps/PizzaShopBattle.png",
+    upperSrc: "images/maps/KitchenUpper.png",
     gameObjects: {
       hero: new Person({
         isPlayerControlled: true,
-        src: "/images/characters/people/demo.png",
+        src: "images/characters/people/demo.png",
         x: utils.withGrid(1),
         y: utils.withGrid(1),
       }),
       npcB: new Person({
         x: utils.withGrid(10),
         y: utils.withGrid(8),
-        src: "/images/characters/people/npc3.png",
+        src: "images/characters/people/npc3.png",
         talking: [
           {
             events: [

@@ -425,7 +425,7 @@ displayButtons(container, isSuccess, resolve) {
     // Create Retry button
     const retryButton = document.createElement("button");
     retryButton.classList.add("event-button", "retry-button");
-    retryButton.innerHTML = `<img src="/images/icons/retry.svg" alt="Retry" />`; // Set SVG as the button content
+    retryButton.innerHTML = `<img src="images/icons/retry.svg" alt="Retry" />`; // Set SVG as the button content
     retryButton.addEventListener("click", () => {
         this.handleRetry(resolve);
     });
@@ -433,7 +433,7 @@ displayButtons(container, isSuccess, resolve) {
     // Create Home button
     const homeButton = document.createElement("button");
     homeButton.classList.add("event-button", "home-button");
-    homeButton.innerHTML = `<img src="/images/icons/home.svg" alt="Home" />`; // Set SVG as the button content
+    homeButton.innerHTML = `<img src="images/icons/home.svg" alt="Home" />`; // Set SVG as the button content
     homeButton.addEventListener("click", () => {
         this.handleHome(resolve);
     });
@@ -441,7 +441,7 @@ displayButtons(container, isSuccess, resolve) {
     // Create Next Level button with SVG
     const nextLevelButton = document.createElement("button");
     nextLevelButton.classList.add("event-button", "next-level-button");
-    nextLevelButton.innerHTML = `<img src="/images/icons/next.svg" alt="Next" />`; // Set SVG as the button content
+    nextLevelButton.innerHTML = `<img src="images/icons/next.svg" alt="Next" />`; // Set SVG as the button content
 
     // Enable or disable the Next Level button based on isSuccess
     if (isSuccess) {
