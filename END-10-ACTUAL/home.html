@@ -90,14 +90,17 @@ h1 {
     
 </head>
 <body>
-    <div class="container">
-        <h1>Select your level:</h1>
-        <ul class="levels">
-          <li>Easy</li>
-          <li>Medium</li>
-          <li>Hard</li>
-          <li>Out of this world</li>
-        </ul>    
-      </div>
+  <div class="container">
+      <h1>Select your level:</h1>
+      <ul class="levels">
+        <li onclick="setLevel(1)">Easy</li>
+        <li onclick="setLevel(2)">Medium</li>
+        <li onclick="setLevel(3)">Hard</li>
+        <li onclick="setLevel(4)">Out of this world</li>
+      </ul>    
+    </div>
+
+    <script src="/level.js"></script>
+    <script src="/scripts.js"></script>
 </body>
 </html>

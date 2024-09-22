@@ -247,25 +247,116 @@ h3 {
   text-decoration: underline;
 }
 
-.menu-container {
-  width: 100%;
-  height: 40px;
-  background: #4CAF50;
-  color: white;
+
+
+.menu {
   display: flex;
-  align-items: center;
-  padding: 0 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  margin-bottom: 5px;
+  justify-content: space-around;
+  margin-bottom: 10px;
 }
 
-.menu-container h3 {
-  margin: 0;
+.menu-button {
+  padding: 10px 15px;
   font-size: 16px;
+  cursor: pointer;
 }
 
-.menu-container p {
-  margin: 0;
-  font-size: 14px;
+
+
+
+
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px;
+  flex-wrap: wrap;
+}
+.global-indicator-container {
+  width: calc(352px * 3); /* Match the game-wrapper width */
+  margin-bottom: 20px;
 }
 
+.output-container {
+  width: calc(100% - (352px * 3) - 20px); /* Match the game-wrapper width */
+  margin-bottom: 20px;
+  overflow: auto;
+}
+
+.global-indicator-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.global-level-indicator h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.global-level-buttons button {
+  margin: 5px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.global-level-buttons button:hover {
+  background-color: #0056b3;
+}
+
+.output-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff0f0;
+  border: 1px solid #ffcccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+#outputHeader {
+  font-size: 20px;
+  color: #b30000;
+}
+
+.toggle-button {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #ff4d4d;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.toggle-button:hover {
+  background-color: #cc0000;
+}
+
+pre#errorOutput {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  padding: 10px;
+  background-color: #ffe6e6;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 5px;
+  overflow: auto;
+}
+
+pre#resultOutput {
+  display: none;
+}

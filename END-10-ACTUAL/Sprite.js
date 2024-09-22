@@ -17,6 +17,11 @@ class Sprite {
       this.isShadowLoaded = true;
     }
 
+
+    this.highlighted = false; 
+    this.highlightColor = "white"; 
+    this.transitionProgress = 0;
+
     // Configure Animation & Initial State
     this.useAnimation = config.useAnimation || false; // New property
     this.animations = config.animations || {
@@ -71,9 +76,67 @@ class Sprite {
     }
   }
 
+ 
+  highlight(color = "white") {
+    this.highlighted = true; // Start highlighting
+    this.highlightColor = color; // Set the initial highlight color
+    this.transitionProgress = 0; // Reset transition progress
+
+    if (color === "green") {
+      this.transitionToColor("green");
+    } else if (color === "red") {
+      this.transitionToColor("red");
+    } else {
+      this.transitionToColor("white");
+    }
+  }
+  transitionToColor(targetColor) {
+    const transitionDuration = 1000; // 1 second transition
+    this.transitionProgress = 0; // Reset transition progress
+  
+    const step = () => {
+      this.transitionProgress += 16; // Approx. 60 FPS
+      const t = Math.min(this.transitionProgress / transitionDuration, 1); // Clamp t to [0, 1]
+  
+      // Determine the target RGB values
+      let targetRgb;
+      if (targetColor === "green") {
+        targetRgb = [0, 255, 0]; // Target green color
+      } else if (targetColor === "red") {
+        targetRgb = [255, 0, 0]; // Target red color
+      } else {
+        targetRgb = [255, 255, 255]; // Default to white
+      }
+  
+      // Interpolate between white (255, 255, 255) and target color
+      const r = Math.round(255 * (1 - t) + targetRgb[0] * t);
+      const g = Math.round(255 * (1 - t) + targetRgb[1] * t);
+      const b = Math.round(255 * (1 - t) + targetRgb[2] * t);
+  
+      this.highlightColor = `rgb(${r}, ${g}, ${b})`; // Set the interpolated color
+  
+      if (this.transitionProgress < transitionDuration) {
+        requestAnimationFrame(step);
+      }
+    };
+    
+    requestAnimationFrame(step);
+  }
+
+  removeHighlight() {
+    this.highlighted = false;
+    this.transitionProgress = 0; // Reset progress when removing highlight
+  }
+
   draw(ctx) {
     const x = this.gameObject.x - 8;
     const y = this.gameObject.y - 18;
+
+    if (this.highlighted) {
+      ctx.strokeStyle = this.highlightColor;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(x, y, 32, 32); // Draw highlight outline
+    }
 
     this.isShadowLoaded && ctx.drawImage(this.shadow, x, y);
 
@@ -86,6 +149,12 @@ class Sprite {
       32, 32
     );
 
+
+
+ // Update highlight color if highlighted
+
     this.updateAnimationProgress();
+        // this.updateHighlightColor(); // Update highlight color if highlighted
+
   }
 }

@@ -8,6 +8,8 @@ class Item extends GameObject {
       this.comparisonSign = config.comparisonSign || "==";
       this.parent = null;
       this.offset = 0;
+
+      
   
       // The size of each sprite box
       this.boxSize = 16;
