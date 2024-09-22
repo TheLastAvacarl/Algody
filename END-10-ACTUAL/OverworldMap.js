@@ -122,10 +122,32 @@ class OverworldMap {
     const { x, y } = utils.nextPosition(wasX, wasY, direction);
     this.addWall(x, y);
   }
+
+  
+}
+
+function generateItems(startX, startY, itemCount) {
+  const items = {};
+  for (let i = 0; i < itemCount; i++) {
+    const x = startX + i;
+    const y = startY;
+
+    // Create item with random value between 0 and 99
+    const randomValue = Math.floor(Math.random() * 29) +1;
+
+    // Add the item to the items object
+    items[`item${i}`] = new Item({
+      x: utils.withGrid(x),
+      y: utils.withGrid(y),
+      value: randomValue,
+      src: "/images/characters/boxes.png",
+    });
+  }
+  return items;
 }
 
 window.OverworldMaps = {
-  DemoRoom: {
+ Map1: {
     lowerSrc: "/images/maps/DemoMap.png",
     upperSrc: "/images/maps/DemoUpper.png",
     gameObjects: {
@@ -137,85 +159,72 @@ window.OverworldMaps = {
         useShadow: true,
         useAnimation: true,
       }),
-
-      // item11: new Item({
-      //   x: utils.withGrid(1),
-      //   y: utils.withGrid(7),
-      //   value: 5,
-      //   src: "/images/characters/boxes.png",
-      // }),
+      // ...generateItems(2, 7, 10),
       item0: new Item({
         x: utils.withGrid(2),
         y: utils.withGrid(7),
-        value: 2,
+        value: 1,
         src: "/images/characters/boxes.png",
       }),
       item1: new Item({
         x: utils.withGrid(3),
         y: utils.withGrid(7),
-        value: 5,
+        value: 2,
         src: "/images/characters/boxes.png",
       }),
       item2: new Item({
         x: utils.withGrid(4),
         y: utils.withGrid(7),
         src: "/images/characters/boxes.png",
-        value: 20,
+        value: 7,
       }),
       item3: new Item({
         x: utils.withGrid(5),
         y: utils.withGrid(7),
         src: "/images/characters/boxes.png",
-        value: 15,
+        value: 4,
       }),
       item4: new Item({
         x: utils.withGrid(6),
         y: utils.withGrid(7),
         src: "/images/characters/boxes.png",
-        value: 16,
+        value: 5,
       }),
       item5: new Item({
         x: utils.withGrid(7),
         y: utils.withGrid(7),
         src: "/images/characters/boxes.png",
-        value: 27,
+        value: 6,
       }),
       item6: new Item({
         x: utils.withGrid(8),
         y: utils.withGrid(7),
         src: "/images/characters/boxes.png",
-        value: 28,
+        value: 7,
       }),
       item7: new Item({
         x: utils.withGrid(9),
         y: utils.withGrid(7),
         src: "/images/characters/boxes.png",
-        value: 21,
+        value: 8,
       }),
       item8: new Item({
         x: utils.withGrid(10),
         y: utils.withGrid(7),
         src: "/images/characters/boxes.png",
-        value: 26,
+        value: 9,
       }),
       
     },
     walls: {
       // [utils.asGridCoord(7, 6)]: true,
-      // [utils.asGridCoord(8, 6)]: true,
-      // [utils.asGridCoord(7, 7)]: true,
-      // [utils.asGridCoord(8, 7)]: true,
+
     },
     cutsceneSpaces: {
       // [utils.asGridCoord(2, 7)]: [
       //   {
       //     events: [
       //       // {who: "hero", type: "walkTo", x: utils.withGrid(2), y: utils.withGrid(7), },
-      //       {who: "hero", type: "stand", direction:"right", },
-      //       { who: "hero", type: "pickUp",},
-      //       // { who: "hero", type: "checkItemInFront" },
-      //       // { who: "hero", type: "checkItemInFront", compareValue: 101, comparisonSign: "==" },
-      //       // { who: "npcB", type: "walkTo", x: utils.withGrid(3), y: utils.withGrid(3) },
       //     ]
       //   }
       // ],
@@ -228,15 +237,15 @@ window.OverworldMaps = {
       // ]
     }
   },
-  
-  Kitchen: {
-    lowerSrc: "/images/maps/KitchenLower.png",
+  Map2: {
+    lowerSrc: "/images/maps/PizzaShopBattle.png",
     upperSrc: "/images/maps/KitchenUpper.png",
     gameObjects: {
       hero: new Person({
         isPlayerControlled: true,
-        x: utils.withGrid(5),
-        y: utils.withGrid(5),
+        src: "/images/characters/people/demo.png",
+        x: utils.withGrid(1),
+        y: utils.withGrid(1),
       }),
       npcB: new Person({
         x: utils.withGrid(10),

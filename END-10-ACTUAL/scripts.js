@@ -1,14 +1,11 @@
-
-        
-
-        const indicator = document.getElementById('indicator');
-        const dropzone = document.getElementById('dropzone');
-        const lineHeight = 20; // Adjust this as needed
-        let isDragging = false;
-        let lineNumber;
-        let currentLanguage = "cpp";
-        let isMessageHandlingEnabled = false;
-        let data;
+const indicator = document.getElementById('indicator');
+const dropzone = document.getElementById('dropzone');
+const lineHeight = 20;
+let isDragging = false;
+let lineNumber;
+let currentLanguage = "cpp";
+let isMessageHandlingEnabled = false;
+let data;
 
 
     const operatorOptions = {
@@ -24,7 +21,7 @@
 document.getElementById('drawerToggle').addEventListener('click', function() {
     const drawer = document.querySelector('.drawer');
     const isClosed = drawer.classList.toggle('closed');
-    // Adjust the drawer position based on the toggle state
+
     if (isClosed) {
         drawer.style.transform = 'translateX(-200px)';
     } else {
@@ -49,49 +46,55 @@ let isOutputVisible = false;
         let previousOutput = '';
 
 
-        document.getElementById('toggleOutputButton').addEventListener('click', function() {
-            isOutputVisible = !isOutputVisible;
-            const outputHeader = document.getElementById('outputHeader');
-            const errorOutput = document.getElementById('errorOutput');
-            const resultOutput = document.getElementById('resultOutput');
+        // document.getElementById('toggleOutputButton').addEventListener('click', function() {
+        //     isOutputVisible = !isOutputVisible;
+        //     const outputHeader = document.getElementById('outputHeader');
+        //     const errorOutput = document.getElementById('errorOutput');
+        //     const resultOutput = document.getElementById('resultOutput');
 
-            if (isOutputVisible) {
-                outputHeader.textContent = 'Output';
-                errorOutput.style.display = 'none';
-                resultOutput.style.display = 'block';
-                resultOutput.textContent = previousOutput; // Show stored output
-            } else {
-                outputHeader.textContent = 'Error Messages';
-                errorOutput.style.display = 'block';
-                resultOutput.style.display = 'none';
-                errorOutput.textContent = previousError; // Show stored errors
+        //     if (isOutputVisible) {
+        //         outputHeader.textContent = 'Output';
+        //         errorOutput.style.display = 'none';
+        //         resultOutput.style.display = 'block';
+        //         resultOutput.textContent = previousOutput; // Show stored output
+        //     } else {
+        //         outputHeader.textContent = 'Error Messages';
+        //         errorOutput.style.display = 'block';
+        //         resultOutput.style.display = 'none';
+        //         errorOutput.textContent = previousError; // Show stored errors
+        //     }
+        // });
+
+        window.onmessage = function (e) {
+            console.log('Received message:', e.data);
+            
+            if (e.data && e.data.language) {
+                console.log('Detected language change:', e.data.language);
             }
-        });
-
-
-window.onmessage = function (e) {
-    console.log('Received message:', e.data);
-    
-    if (e.data && e.data.language) {
-        console.log('Detected language change:', e.data.language);
-    }
-
-    if (e.data.action === 'runComplete' && isRunInitiated) {
+        
+            if (e.data.action === 'runComplete' && isRunInitiated) {
+                const outputHeader = document.getElementById('outputHeader');
+                const errorOutput = document.getElementById('errorOutput');
+                const resultOutput = document.getElementById('resultOutput');
+                
                 if (e.data.result.success) {
                     previousError = ''; // Clear previous errors
                     previousOutput = e.data.result.output; // Store output
-                    if (isOutputVisible) {
-                        document.getElementById('resultOutput').textContent = previousOutput; // Show output
-                    }
+        
+                    // Show output and hide error
+                    outputHeader.textContent = 'Output';
+                    errorOutput.style.display = 'none';
+                    resultOutput.style.display = 'block';
+                    resultOutput.textContent = previousOutput; // Show output
                 } else {
                     // Reset the output when there's an error
                     previousOutput = ''; // Clear previous output
-                    document.getElementById('resultOutput').textContent = previousOutput; // Ensure output is cleared
-
+                    resultOutput.style.display = 'none'; // Hide output
+        
                     previousError = e.data.result.output; // Store errors
-                    if (!isOutputVisible) {
-                        document.getElementById('errorOutput').textContent = previousError; // Show errors
-                    }
+                    outputHeader.textContent = 'Error Messages';
+                    errorOutput.style.display = 'block';
+                    errorOutput.textContent = previousError; // Show errors
                 }
                 isRunInitiated = false; 
             }
@@ -103,7 +106,6 @@ function displayError(error) {
 }
 
 document.getElementById('languageSelect').addEventListener('change', function() {
-    const level = 1; // Change this value based on your application's logic or UI
     updateLanguage(this.value, level);
 });
 
@@ -116,6 +118,8 @@ function updateLanguage(language, level) {
     populateOperatorOptions(language);
 }
         document.addEventListener('DOMContentLoaded', function() {
+
+            
     const languageSelect = document.getElementById('languageSelect');
     languageSelect.value = 'cpp'; // Set default language to C++
     
@@ -135,6 +139,13 @@ function updateLanguage(language, level) {
                 option.textContent = operator;
                 operatorSelect.appendChild(option);
             });
+        }
+
+        level;
+
+        const levelElement = document.getElementById("globalLevel");
+        if (levelElement) {
+          levelElement.textContent = level;
         }
 
 
@@ -163,6 +174,9 @@ function updateLanguage(language, level) {
         default:
             return '';
     }
+
+
+    
 }
 
   
@@ -191,7 +205,9 @@ function updateLanguage(language, level) {
 
 
         function drop(event) {
+            console.log("LEVBEL IS ", level);
             event.preventDefault();
+            // window.overworld.runCutscene();
             const iframe = document.getElementById('oc-editor');
 
             data = event.dataTransfer.getData("text");

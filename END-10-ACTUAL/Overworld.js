@@ -63,22 +63,39 @@ class Overworld {
  
   // Create a separate function for running cutscenes
   runCutscene() {
+    console.log(level);
    this.map.startCutscene([  
-     { who: "hero", type: "walkTo", x: utils.withGrid(3), y: utils.withGrid(6) },
-     { who: "hero", type: "walk", direction:"right"},
-     { type: "swapPrevious", who: "hero" },
+    { type: "checkSorted" },
+    {
+      type: "goToItem",
+      who: "hero", // ID of the character
+      itemIndex: 2 // Index of the item to go to
+  },
+  { type: "checkItemInFront", who:"hero" },
+  { type: "highlight", itemId: "item2" }, 
+    {
+      type: "goToItem",
+      who: "hero", // ID of the character
+      itemIndex: 5 // Index of the item to go to
+  },
+    {
+      type: "goToItem",
+      who: "hero", // ID of the character
+      itemIndex: 9 // Index of the item to go to
+  },
   
-     { type: "checkSorted" },
-    //  {
-    //    type: "changeCanvasBorderAndPlaySound",
-    //    result: "failed" // Can be "success" or "failed"
-    //  }
+     { type: "swapPrevious", who: "hero" },
+  // { type: "goToFirstItem", who: "hero" }, // Hero goes to the first item
+  // { type: "goToNextItem", who: "hero" },  // Hero goes to the next item
+  // { type: "goToPreviousItem", who: "hero" } // Hero goes to the previous item
+
      
    ]);
   }
  
   init() {
-   this.startMap(window.OverworldMaps.DemoRoom);
+  console.log(level);
+   this.startMap(window.OverworldMaps.Map1);
  
  
    this.bindActionInput();
