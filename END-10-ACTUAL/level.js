@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
     updateLevelDisplay();
 });
 
+
+
+
 // Function to retrieve the level from the URL
 function getParameterByName(name) {
     const urlParams = new URLSearchParams(window.location.search);
