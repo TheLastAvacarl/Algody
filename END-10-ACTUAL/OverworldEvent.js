@@ -36,6 +36,7 @@ class OverworldEvent {
   }
 
   
+
   walk(resolve) {
     const who = this.map.gameObjects[this.event.who];
     who.startBehavior({
@@ -55,6 +56,7 @@ class OverworldEvent {
     };
     document.addEventListener("PersonWalkingComplete", completeHandler);
   }
+
 
   textMessage(resolve) {
     const who = this.map.gameObjects[this.event.who];
@@ -80,6 +82,7 @@ class OverworldEvent {
     message.init(document.querySelector(".game-container"));
   }
 
+
   changeMap(resolve) {
     const sceneTransition = new SceneTransition();
     sceneTransition.init(document.querySelector(".game-container"), () => {
@@ -88,7 +91,6 @@ class OverworldEvent {
       sceneTransition.fadeOut();
     });
   }
-
 
 
   checkItemInFront(resolve) {
@@ -116,7 +118,7 @@ class OverworldEvent {
     }
 
     if (item) {
-      item.sprite.highlight("green");
+      item.sprite.highlight("white");
     }
   
     let comparisonMessage = '';
@@ -148,6 +150,7 @@ class OverworldEvent {
         setTimeout(() => {
           // Determine color based on result
           const resultColor = isComparisonValid ? 'green' : 'red';
+          item.sprite.highlight(resultColor);
           displayMessage(resultText, resultColor, 2000, () => {
             console.log("Text message completed");
             resolve();
@@ -183,7 +186,55 @@ class OverworldEvent {
       });
     }
   }
-  
+
+  foundItem(resolve) {
+    const who = this.map.gameObjects[this.event.who];
+    
+    // Get all items on the map and sort them by their `x` values.
+    const items = Object.values(this.map.gameObjects).filter(obj => obj instanceof Item);
+    const sortedItems = items.sort((a, b) => a.x - b.x);
+
+    // Get the index of the item we want to find
+    const targetItemIndex = this.event.itemIndex;
+    const targetValue = this.event.value; // New parameter for value comparison
+
+    // Ensure the targetItemIndex is within range
+    if (targetItemIndex < 0 || targetItemIndex >= sortedItems.length) {
+        console.log("Item index out of bounds!");
+        this.displayMessageAndPlaySound(`No item at index ${targetItemIndex}`, false, resolve);
+        return;
+    }
+
+    // Find the target item based on the dynamic sorting
+    const targetItem = sortedItems[targetItemIndex];
+
+    if (targetItem) {
+        console.log(`Found item at index ${targetItemIndex}:`, targetItem);
+
+        // Highlight the found item
+        targetItem.sprite.highlight("green");
+
+        // Check for value comparison
+        if (targetValue !== undefined) {
+            if (targetItem.value === targetValue) {
+                // If values match, display success message
+                this.displayMessageAndPlaySound(`Found item with value ${targetItem.value} at index ${targetItemIndex}. Values match!`, true, resolve);
+            } else {
+                // If values do not match, highlight red and display failure message
+                targetItem.sprite.highlight("red");
+                this.displayMessageAndPlaySound(`Found item with value ${targetItem.value} at index ${targetItemIndex}. Values do not match.`, false, resolve);
+            }
+        } else {
+            // No value parameter provided, display found message
+            this.displayMessageAndPlaySound(`Found item with value ${targetItem.value} at index ${targetItemIndex}`, true, resolve);
+        }
+    } else {
+        console.log(`No item found at index ${targetItemIndex}.`);
+        this.displayMessageAndPlaySound("No item found.", false, resolve);
+    }
+}
+
+
 
   
   compareItem(item) {
@@ -302,6 +353,53 @@ class OverworldEvent {
     });
 }
 
+highlightIndex(resolve) {
+  const targetIndex = this.event.itemIndex;
+
+  // Get all items on the map and sort them by their `x` values.
+  const items = Object.values(this.map.gameObjects).filter(obj => obj instanceof Item);
+  const sortedItems = items.sort((a, b) => a.x - b.x);
+
+  // Ensure the targetIndex is within range
+  if (targetIndex < 0 || targetIndex >= sortedItems.length) {
+      console.log("Index out of bounds for highlighting!");
+      resolve(); // Resolve immediately if index is invalid
+      return;
+  }
+
+  // Find the target item based on the dynamic sorting
+  const targetItem = sortedItems[targetIndex];
+
+  if (targetItem) {
+    console.log(`Highlighting item at index ${targetIndex}:`, targetItem);
+
+    // Highlight the found item
+    targetItem.sprite.highlight("yellow"); // Use a different color for highlighting
+
+    // Optionally, you can display a message or add more actions here
+  } else {
+    console.log(`No item found to highlight at index ${targetIndex}.`);
+  }
+
+  // Resolve the event after the highlight action
+  resolve();
+}
+
+
+removeAllHighlights(resolve) {
+  // Get all items on the map
+  const items = Object.values(this.map.gameObjects).filter(obj => obj instanceof Item);
+
+  // Remove highlight from each item
+  items.forEach(item => {
+    item.sprite.removeHighlight(); // Assuming this method resets the highlight state
+  });
+
+  console.log("Removed all highlights from items.");
+
+  // Resolve the event after removing highlights
+  resolve();
+}
 
   walkTo(resolve) {
     const who = this.map.gameObjects[this.event.who];
@@ -348,10 +446,6 @@ class OverworldEvent {
   }
   
 
-  
-
-  
-
   pickUp(resolve) {
     const who = this.map.gameObjects[this.event.who];
     who.pickUp({
@@ -382,156 +476,366 @@ class OverworldEvent {
     });
   }
 
+  swapTwoItems(resolve) {
+    const targetIndex1 = this.event.itemIndex1;
+    const targetIndex2 = this.event.itemIndex2;
 
+    // Ensure the indices are provided
+    if (targetIndex1 === undefined || targetIndex2 === undefined) {
+        console.log("Indices for swapping not provided!");
+        resolve();
+        return;
+    }
 
-  
-  changeCanvasBorderAndPlaySound(isSuccess, resolve) {
-    const container = document.querySelector(".game-container");
+    // Function to get the current item based on index
+    const getCurrentItem = (index) => {
+        const items = Object.values(this.map.gameObjects).filter(obj => obj instanceof Item);
+        return items.sort((a, b) => a.x - b.x)[index];
+    };
 
-    if (container) {
-        // Change the container border color based on result
-        container.style.border = `2px solid ${isSuccess ? "green" : "red"}`;
+    // Store original positions of the items
+    const item1 = getCurrentItem(targetIndex1);
+    const item2 = getCurrentItem(targetIndex2);
+    const originalPosition1 = { x: item1.x, y: item1.y };
+    const originalPosition2 = { x: item2.x, y: item2.y };
 
-        // Play the appropriate sound based on result
-        const audio = new Audio(`path/to/${isSuccess ? "success" : "failed"}.mp3`);
-        audio.play().then(() => {
-            // Ensure the sound plays and then display buttons
-            this.displayButtons(container, isSuccess, resolve); // Pass isSuccess to displayButtons
-
-            // If successful, complete the level
-            if (isSuccess) {
-                completeLevel(level); // Call completeLevel with the current level
-            }
-        }).catch(error => {
-            console.error("Error playing sound:", error);
-            this.displayButtons(container, isSuccess, resolve); // Pass isSuccess even if the sound fails to play
-
-            // If successful, complete the level even if sound fails
-            if (isSuccess) {
-                completeLevel(level); // Call completeLevel with the current level
+    const moveToFirstItem = () => {
+        const goToItemEvent1 = new OverworldEvent({
+            map: this.map,
+            event: {
+                type: "goToItem",
+                who: this.event.who,
+                itemIndex: targetIndex1,
             }
         });
-    } else {
-        console.error("Game container not found.");
-        this.displayButtons(container, isSuccess, resolve); // Pass isSuccess even if the container is not found
+        return goToItemEvent1.init();
+    };
+
+    const pickUpFirstItem = () => {
+        const pickUpEvent1 = new OverworldEvent({
+            map: this.map,
+            event: {
+                type: "pickUp",
+                who: this.event.who,
+            }
+        });
+        return pickUpEvent1.init();
+    };
+
+    const moveToSecondItem = () => {
+        const goToItemEvent2 = new OverworldEvent({
+            map: this.map,
+            event: {
+                type: "goToItem",
+                who: this.event.who,
+                itemIndex: targetIndex2,
+            }
+        });
+        return goToItemEvent2.init();
+    };
+
+    const pickUpSecondItem = () => {
+        const pickUpEvent2 = new OverworldEvent({
+            map: this.map,
+            event: {
+                type: "pickUp",
+                who: this.event.who,
+            }
+        });
+        return pickUpEvent2.init();
+    };
+
+    const moveToFirstItemPosition = () => {
+        const moveEvent1 = {
+            type: "walkTo",
+            who: this.event.who,
+            x: originalPosition1.x,
+            y: originalPosition1.y - 16, // Adjust Y-coordinate if needed
+        };
+
+        const walkToEvent1 = new OverworldEvent({
+            map: this.map,
+            event: moveEvent1,
+        });
+
+        return walkToEvent1.init();
+    };
+
+    const standAfterFirstPutDown = () => {
+        const standEvent1 = {
+            type: "stand",
+            who: this.event.who,
+            direction: "down",
+            time: 500,
+        };
+
+        const standHandler1 = new OverworldEvent({
+            map: this.map,
+            event: standEvent1,
+        });
+
+        return standHandler1.init();
+    };
+
+    const putDownFirstItem = () => {
+        const putDownEvent1 = new OverworldEvent({
+            map: this.map,
+            event: {
+                type: "putDown",
+                who: this.event.who,
+            }
+        });
+
+        return putDownEvent1.init();
+    };
+
+    const moveToSecondItemPosition = () => {
+        const moveEvent2 = {
+            type: "walkTo",
+            who: this.event.who,
+            x: originalPosition2.x,
+            y: originalPosition2.y - 16, // Adjust Y-coordinate if needed
+        };
+
+        const walkToEvent2 = new OverworldEvent({
+            map: this.map,
+            event: moveEvent2,
+        });
+
+        return walkToEvent2.init();
+    };
+
+    const standAfterSecondPutDown = () => {
+        const standEvent2 = {
+            type: "stand",
+            who: this.event.who,
+            direction: "down",
+            time: 500,
+        };
+
+        const standHandler2 = new OverworldEvent({
+            map: this.map,
+            event: standEvent2,
+        });
+
+        return standHandler2.init();
+    };
+
+    const putDownSecondItem = () => {
+        const putDownEvent2 = new OverworldEvent({
+            map: this.map,
+            event: {
+                type: "putDown",
+                who: this.event.who,
+            }
+        });
+
+        return putDownEvent2.init();
+    };
+
+    // Execute the sequence: Move to item 1 -> pick up item 1 -> Move to item 2 -> pick up item 2
+    moveToFirstItem()
+        .then(() => pickUpFirstItem())
+        .then(() => moveToSecondItem())
+        .then(() => pickUpSecondItem())
+        .then(() => putDownFirstItem())
+        .then(() => standAfterFirstPutDown())
+        .then(() => moveToFirstItemPosition()) // Move back to the first item's original position
+        .then(() => standAfterSecondPutDown())
+        .then(() => putDownSecondItem())
+        .then(() => moveToSecondItemPosition())
+        .then(() => resolve());
+}
+
+
+
+
+
+displayMessageAndPlaySound(messageText, isSuccess, resolve) {
+  const who = this.map.gameObjects[this.event.who];
+
+  // Estimate text width
+  const textWidth = messageText.length;
+  const centeredX = who.x - textWidth;
+
+  // Display the text message
+  const message = new TextMessage({
+    text: messageText,
+    x: centeredX,
+    y: who.y - 16,
+    duration: 2000, // Display for 2 seconds
+    canBeSkipped: false,
+    onComplete: () => {
+      // After message is complete, change canvas border and play sound
+      this.changeCanvasBorderAndPlaySound(isSuccess, resolve);
     }
+  });
+
+  message.init(document.querySelector(".game-container"));
+}
+
+changeCanvasBorderAndPlaySound(isSuccess, resolve) {
+  const container = document.querySelector(".game-container");
+
+  if (container) {
+    // Change border color
+    container.style.border = `2px solid ${isSuccess ? "green" : "red"}`;
+
+    // Play sound
+    const audio = new Audio(`path/to/${isSuccess ? "success" : "failed"}.mp3`);
+    audio.play().then(() => {
+      setTimeout(resolve, 500);
+    }).catch(error => {
+      console.error("Error playing sound:", error);
+      resolve(); // Resolve even if there's an error playing the sound
+    });
+    this.displayButtons(container, isSuccess, resolve);
+  } else {
+    console.error("Game container not found.");
+
+    resolve();
+  }
 }
 
 displayButtons(container, isSuccess, resolve) {
-    // Create a container for buttons
-    const buttonContainer = document.createElement("div");
-    buttonContainer.classList.add("button-container");
+  // Create a container for buttons
+  const buttonContainer = document.createElement("div");
+  buttonContainer.classList.add("button-container");
 
-    // Create Retry button
-    const retryButton = document.createElement("button");
-    retryButton.classList.add("event-button", "retry-button");
-    retryButton.innerHTML = `<img src="images/icons/retry.svg" alt="Retry" />`; // Set SVG as the button content
-    retryButton.addEventListener("click", () => {
-        this.handleRetry(resolve);
-    });
+  // Create status message
+  const statusMessage = document.createElement("h2");
+  statusMessage.textContent = isSuccess ? "Success" : "Failed";
+  statusMessage.classList.add("status-message");
+  buttonContainer.appendChild(statusMessage);
 
-    // Create Home button
-    const homeButton = document.createElement("button");
-    homeButton.classList.add("event-button", "home-button");
-    homeButton.innerHTML = `<img src="images/icons/home.svg" alt="Home" />`; // Set SVG as the button content
-    homeButton.addEventListener("click", () => {
-        this.handleHome(resolve);
-    });
+  // Create a row for buttons
+  const buttonRow = document.createElement("div");
+  buttonRow.classList.add("button-row");
 
-    // Create Next Level button with SVG
-    const nextLevelButton = document.createElement("button");
-    nextLevelButton.classList.add("event-button", "next-level-button");
-    nextLevelButton.innerHTML = `<img src="images/icons/next.svg" alt="Next" />`; // Set SVG as the button content
+  // Create Retry button
+  const retryButton = document.createElement("button");
+  retryButton.classList.add("event-button", "retry-button");
+  retryButton.innerHTML = `<img src="images/icons/retry.svg" alt="Retry" />`;
+  retryButton.addEventListener("click", () => {
+      this.handleRetry(resolve);
+  });
 
-    // Enable or disable the Next Level button based on isSuccess
-    if (isSuccess) {
-        nextLevelButton.disabled = false;
-        nextLevelButton.addEventListener("click", () => {
-            this.handleNextLevel(resolve); // Implement your next level logic here
-        });
-    } else {
-        nextLevelButton.disabled = true; // Disable the button if not successful
-    }
+  // Create Home button
+  const homeButton = document.createElement("button");
+  homeButton.classList.add("event-button", "home-button");
+  homeButton.innerHTML = `<img src="images/icons/home.svg" alt="Home" />`;
+  homeButton.addEventListener("click", () => {
+      this.handleHome(resolve);
+  });
 
-    // Append buttons to button container
-    buttonContainer.appendChild(retryButton);
-    buttonContainer.appendChild(homeButton);
-    buttonContainer.appendChild(nextLevelButton); // Add Next Level button to the container
+  // Create Next Level button with SVG
+  const nextLevelButton = document.createElement("button");
+  nextLevelButton.classList.add("event-button", "next-level-button");
+  nextLevelButton.innerHTML = `<img src="images/icons/next.svg" alt="Next" />`;
 
-    // Append button container to main container
-    container.appendChild(buttonContainer);
+  // Enable or disable the Next Level button based on isSuccess
+  if (isSuccess) {
+      nextLevelButton.disabled = false;
+      nextLevelButton.addEventListener("click", () => {
+          this.handleNextLevel(resolve);
+      });
+  } else {
+      nextLevelButton.disabled = true;
+  }
 
-    // Use a timeout to add the "show" class after 1 second
-    setTimeout(() => {
-        buttonContainer.classList.add("show");
-    }, 1000);
+  // Append buttons to button row
+  buttonRow.appendChild(retryButton);
+  buttonRow.appendChild(homeButton);
+  buttonRow.appendChild(nextLevelButton);
+
+  // Append button row to button container
+  buttonContainer.appendChild(buttonRow);
+
+  // Append button container to main container
+  container.appendChild(buttonContainer);
+
+  // Use a timeout to add the "show" class after 1 second
+  setTimeout(() => {
+      buttonContainer.classList.add("show");
+  }, 1000);
 }
 
-
-  handleNextLevel(resolve) {
+handleNextLevel(resolve) {
     console.log("Next Level button clicked");
     // Implement next level logic here
     window.location.href = "next-level.html"; // Example: navigate to the next level
     resolve(); // Call resolve to continue after clicking the button
-  }
+}
   
-  
-  handleRetry(resolve) {
+handleRetry(resolve) {
     const container = document.querySelector(".game-container");
     console.log("Retry button clicked");
     container.style.border = "";
+
+    // Remove buttons
     const buttons = document.querySelectorAll(".retry-button, .home-button, .next-level-button");
     buttons.forEach(button => button.remove());
 
+    // Remove text messages
+    const existingMessages = document.querySelectorAll(".status-message"); // Adjust the selector as necessary
+    existingMessages.forEach(message => message.remove());
+
+    // Reset highlights on game objects
+    const gameObjects = this.map.gameObjects;
+    for (const key in gameObjects) {
+        const obj = gameObjects[key];
+        if (obj.sprite && obj.sprite.highlighted) {
+            obj.sprite.removeHighlight(); // Ensure your Sprite class has this method
+        }
+    }
+
     const who = this.map.gameObjects["hero"]; // Assuming "hero" is the player ID
-    ;
     const originalPosition = this.event.originalPosition || { x: utils.withGrid(6), y: utils.withGrid(4) }; // Define the original position or use a default
 
     // Move the player to the original position
     const moveEvent = {
-      type: "walkTo",
-      who: "hero",
-      x: originalPosition.x,
-      y: originalPosition.y
+        type: "walkTo",
+        who: "hero",
+        x: originalPosition.x,
+        y: originalPosition.y
     };
 
     const moveHandler = new OverworldEvent({
-      map: this.map,
-      event: moveEvent
+        map: this.map,
+        event: moveEvent
     });
 
     moveHandler.init().then(() => {
-      // After moving to the original position, create and execute the stand event (direction down)
-      const standEvent = {
-        type: "stand",
-        who: "hero",
-        direction: "down",
-        time: 500,
-      };
+        // After moving to the original position, create and execute the stand event (direction down)
+        const standEvent = {
+            type: "stand",
+            who: "hero",
+            direction: "down",
+            time: 500,
+        };
 
-      const standHandler = new OverworldEvent({
-        map: this.map,
-        event: standEvent
-      });
-
-      
-
-      standHandler.init().then(() => {
-        // After standing, display the text message
-        const message = new TextMessage({
-          text: "Let's try this again",
-          x: utils.withGrid(4.8),
-          y: who.y - 16, 
-          duration: 2000, // Display for 2 seconds
-          canBeSkipped: false,
+        const standHandler = new OverworldEvent({
+            map: this.map,
+            event: standEvent
         });
-        message.init(document.querySelector(".game-container"));
-      });
+
+        standHandler.init().then(() => {
+            // After standing, display the text message
+            const message = new TextMessage({
+                text: "Let's try this again",
+                x: utils.withGrid(4.8),
+                y: who.y - 16, 
+                duration: 2000, // Display for 2 seconds
+                canBeSkipped: false,
+            });
+            message.init(document.querySelector(".game-container"));
+        });
     });
-  }
+}
 
 
-  handleHome(resolve) {
+
+handleHome(resolve) {
     console.log("Home button clicked");
     
     // Record the completed level
@@ -560,71 +864,226 @@ checkSorted(resolve) {
   let index = 0;
   let hasError = false;
 
-  const checkNextItem = () => {
-      if (index >= sortedByPosition.length) {
-          if (!hasError) {
-              completeLevel(level); 
+  // Remove highlights before starting the check
+  this.removeAllHighlights(() => {
+      // Start checking items
+      const checkNextItem = () => {
+          if (index >= sortedByPosition.length) {
+              if (!hasError) {
+                  completeLevel(level); 
+              }
+              this.changeCanvasBorderAndPlaySound(!hasError, resolve);
+              return;
           }
-          this.changeCanvasBorderAndPlaySound(!hasError, resolve);
-          return;
-      }
-      const itemAtPosition = sortedByPosition[index];
-      const itemInMap = items.find(item => item.x === itemAtPosition.x && item.y === itemAtPosition.y);
-      
+          const itemAtPosition = sortedByPosition[index];
+          const itemInMap = items.find(item => item.x === itemAtPosition.x && item.y === itemAtPosition.y);
 
-      if (itemInMap && itemInMap.value === sortedValues[index]) {
-          console.log(`Item at position ${itemAtPosition.x}, ${itemAtPosition.y} is in order.`);
-          itemInMap.sprite.highlight("green");
-          
-      } else {
-          console.log(`Item at position ${itemAtPosition.x}, ${itemAtPosition.y} is out of order.`);
-          hasError = true; // Set hasError to true if any item is out of order
-          itemInMap.sprite.highlight("red");
+          if (itemInMap && itemInMap.value === sortedValues[index]) {
+              console.log(`Item at position ${itemAtPosition.x}, ${itemAtPosition.y} is in order.`);
+              itemInMap.sprite.highlight("green");
+          } else {
+              console.log(`Item at position ${itemAtPosition.x}, ${itemAtPosition.y} is out of order.`);
+              hasError = true; // Set hasError to true if any item is out of order
+              itemInMap.sprite.highlight("red");
+          }
 
-      }
+          index++;
+          setTimeout(checkNextItem, 500); // Check the next item after a delay
+      };
 
-      index++;
-      setTimeout(checkNextItem, 500); // Check the next item after a delay
+      checkNextItem(); // Start checking items
+  });
+}
+
+swapPrevious(resolve) {
+  const sequence = [
+    { who: this.event.who, type: "stand", direction: "down", time: 500 },
+    { who: this.event.who, type: "walk", direction: "left" },
+    { who: this.event.who, type: "stand", direction: "down", time: 500 },
+    { who: this.event.who, type: "pickUp" },
+    { who: this.event.who, type: "stand", direction: "down", time: 500 },
+    { who: this.event.who, type: "walk", direction: "right" },
+    { who: this.event.who, type: "stand", direction: "down", time: 500 },
+    { who: this.event.who, type: "pickUp" },
+    { who: this.event.who, type: "putDown" },
+    { who: this.event.who, type: "stand", direction: "down", time: 500 },
+    { who: this.event.who, type: "walk", direction: "left" },
+    { who: this.event.who, type: "stand", direction: "down", time: 500 },
+    { who: this.event.who, type: "putDown" },
+    { who: this.event.who, type: "walk", direction: "right" },
+    { who: this.event.who, type: "stand", direction: "down", time: 500 },
+  ];
+
+  // Execute each event in the sequence
+  const executeSequence = (index = 0) => {
+    if (index < sequence.length) {
+      this.map.startCutscene([sequence[index]]).then(() => {
+        executeSequence(index + 1); // Call the next event after the previous finishes
+      });
+    } else {
+      resolve(); 
+    }
   };
 
-  checkNextItem(); // Start checking items
-
-  
+  executeSequence();
 }
-  
 
-    swapPrevious(resolve) {
-      const sequence = [
-        { who: this.event.who, type: "stand", direction: "down", time: 500 },
-        { who: this.event.who, type: "walk", direction: "left" },
-        { who: this.event.who, type: "stand", direction: "down", time: 500 },
-        { who: this.event.who, type: "pickUp" },
-        { who: this.event.who, type: "stand", direction: "down", time: 500 },
-        { who: this.event.who, type: "walk", direction: "right" },
-        { who: this.event.who, type: "stand", direction: "down", time: 500 },
-        { who: this.event.who, type: "pickUp" },
-        { who: this.event.who, type: "putDown" },
-        { who: this.event.who, type: "stand", direction: "down", time: 500 },
-        { who: this.event.who, type: "walk", direction: "left" },
-        { who: this.event.who, type: "stand", direction: "down", time: 500 },
-        { who: this.event.who, type: "putDown" },
-        { who: this.event.who, type: "walk", direction: "right" },
-        { who: this.event.who, type: "stand", direction: "down", time: 500 },
-      ];
-  
-      // Execute each event in the sequence
-      const executeSequence = (index = 0) => {
-        if (index < sequence.length) {
-          this.map.startCutscene([sequence[index]]).then(() => {
-            executeSequence(index + 1); // Call the next event after the previous finishes
-          });
-        } else {
-          resolve(); 
-        }
-      };
-  
-      executeSequence();
-    }
+
+compareItemToValue(resolve) {
+  const targetIndex = this.event.itemIndex; // Index of the item to compare
+  const compareValue = this.event.compareValue; // Value to compare against
+
+  // Ensure the index and comparison value are provided
+  if (targetIndex === undefined || compareValue === undefined) {
+      console.log("Index or comparison value not provided!");
+      resolve();
+      return;
+  }
+
+  // Function to get the current item based on index
+  const getCurrentItem = (index) => {
+      const items = Object.values(this.map.gameObjects).filter(obj => obj instanceof Item);
+      return items.sort((a, b) => a.x - b.x)[index];
+  };
+
+  // Step 1: Move to the target item using `goToItem` event
+  const moveToItem = () => {
+      const goToItemEvent = new OverworldEvent({
+          map: this.map,
+          event: {
+              type: "goToItem",
+              who: this.event.who,
+              itemIndex: targetIndex,
+          }
+      });
+      return goToItemEvent.init();
+  };
+
+  // Step 2: Perform comparison with the provided value using `checkItemInFront`
+  const compareItem = () => {
+      const item = getCurrentItem(targetIndex);
+      const itemValue = item.value; // Get the item's value
+
+      const compareItemEvent = new OverworldEvent({
+          map: this.map,
+          event: {
+              type: "checkItemInFront",
+              who: this.event.who,
+              comparisonSign: this.event.comparisonSign,
+              compareValue: compareValue,
+              itemValue: itemValue, // Pass the item's value for comparison
+          }
+      });
+      return compareItemEvent.init();
+  };
+
+  // Execute the sequence: Move to item -> compare to value
+  moveToItem()
+      .then(() => compareItem())
+      .then(() => {
+          // Step 3: Remove highlights after a set time (e.g., 1000 milliseconds)
+          setTimeout(() => {
+              const item = getCurrentItem(targetIndex);
+
+              if (item) item.sprite.removeHighlight(); // Remove highlight from the item
+
+              resolve(); // Resolve after removing highlights
+          }, 1000); // Adjust the time as needed
+      });
+}
+
+
+compareTwoItems(resolve) {
+  const targetIndex1 = this.event.itemIndex1;
+  const targetIndex2 = this.event.itemIndex2;
+
+  // Ensure the indices are provided
+  if (targetIndex1 === undefined || targetIndex2 === undefined) {
+      console.log("Indices for comparison not provided!");
+      resolve();
+      return;
+  }
+
+  // Function to get the current item based on index
+  const getCurrentItem = (index) => {
+      const items = Object.values(this.map.gameObjects).filter(obj => obj instanceof Item);
+      return items.sort((a, b) => a.x - b.x)[index];
+  };
+
+  // Step 1: Move to the first item using `goToItem` event
+  const moveToFirstItem = () => {
+      const goToItemEvent1 = new OverworldEvent({
+          map: this.map,
+          event: {
+              type: "goToItem",
+              who: this.event.who,
+              itemIndex: targetIndex1,
+          }
+      });
+      return goToItemEvent1.init();
+  };
+
+  // Step 2: Check and highlight the first item using `checkItemInFront`
+  const checkFirstItem = () => {
+      const checkItemEvent1 = new OverworldEvent({
+          map: this.map,
+          event: {
+              type: "checkItemInFront",
+              who: this.event.who,
+              comparisonSign: "none", // No comparison for first item, just highlight
+          }
+      });
+      return checkItemEvent1.init();
+  };
+
+  // Step 3: Move to the second item using `goToItem` event
+  const moveToSecondItem = () => {
+      const goToItemEvent2 = new OverworldEvent({
+          map: this.map,
+          event: {
+              type: "goToItem",
+              who: this.event.who,
+              itemIndex: targetIndex2,
+          }
+      });
+      return goToItemEvent2.init();
+  };
+
+  // Step 4: Check the second item and perform comparison using `checkItemInFront`
+  const checkAndCompareItems = () => {
+      const item1 = getCurrentItem(targetIndex1);
+      const compareValue = item1.value; // Compare with the first item's value
+
+      const checkItemEvent2 = new OverworldEvent({
+          map: this.map,
+          event: {
+              type: "checkItemInFront",
+              who: this.event.who,
+              comparisonSign: this.event.comparisonSign,
+              compareValue: compareValue,
+          }
+      });
+      return checkItemEvent2.init();
+  };
+
+  // Execute the sequence: Move to first item -> check first item -> move to second item -> check and compare
+  moveToFirstItem()
+      .then(() => checkFirstItem())
+      .then(() => moveToSecondItem())
+      .then(() => checkAndCompareItems())
+      .then(() => {
+          // Step 5: Remove highlights after a set time (e.g., 2000 milliseconds)
+          setTimeout(() => {
+              const item1 = getCurrentItem(targetIndex1);
+              const item2 = getCurrentItem(targetIndex2);
+
+              if (item1) item1.sprite.removeHighlight(); // Remove highlight from first item
+              if (item2) item2.sprite.removeHighlight(); // Remove highlight from second item
+
+              resolve(); // Resolve after removing highlights
+          }, 1000); // Adjust the time as needed
+      });
+}
 
 
 }

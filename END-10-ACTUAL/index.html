@@ -97,14 +97,18 @@
   </div>
   <div class="container">
     <div class="global-indicator-container">
-      <div class="global-level-indicator">
-        <h3>Global Level: <span id="globalLevel">1</span></h3>
-        <div class="global-level-buttons">
-          <button id="increaseLevel">Increase</button>
-          <button id="decreaseLevel">Decrease</button>
+      <h3>Global Level: <span id="globalLevel">1</span></h3>
+      <div class="global-level-buttons">
+        <button id="homeButton">Home</button>
+        <button id="hintButton">Hint</button>
+        <button id="infoButton">Info</button>
+        <div class="game-speed-container">
+          <label for="gameSpeed">Game Speed: <span id="gameSpeedValue">1x</span></label>
+          <input type="range" id="gameSpeed" min="1" max="4" value="1" step="1" oninput="updateSpeedValue()">
         </div>
       </div>
     </div>
+    
   
     <div class="output-container">
       <h3 id="outputHeader">Result</h3>
@@ -119,26 +123,32 @@
   <button id="startCutsceneButton">Start Cutscene</button>
 
   <script>
-
+function updateSpeedValue() {
+  const speedSlider = document.getElementById('gameSpeed');
+  const speedValueDisplay = document.getElementById('gameSpeedValue');
+  speedValueDisplay.textContent = speedSlider.value + 'x';
+}
     
+const prompts = "Please take the following code and break it down into an array of events. Capture every single step, comparison, swap, and iteration in detail, specifying the type of event, the actor involved, the indices of the items being compared or swapped, and any relevant conditions or results. The output should only be the array of events, and checkSorted should always be the last step. The events should reflect the code. every last bit. Types of Events: { type: 'swapTwoItems', who: 'hero', itemIndex1: 0, itemIndex2: 1 } { type: 'compareTwoItems', who: 'hero', itemIndex1: 0, itemIndex2: 1, comparisonSign: '<' } { type: 'goToItem', who: 'hero', itemIndex: 1 } { type: 'checkSorted' } (last step). Here is the code to analyze: #include <iostream> using namespace std; void insertionSort(int arr[], int n) { for (int i = 1; i < n; i++) { int key = arr[i]; int j = i - 1; // Move elements of arr[0..i-1], that are greater than key, // to one position ahead of their current position while (j >= 0 && arr[j] > key) { arr[j + 1] = arr[j]; j--; } arr[j + 1] = key; } } int main() { int arr[] = {1, 2, 7, 4, 5, 6, 7, 8, 9}; int n = sizeof(arr) / sizeof(arr[0]); insertionSort(arr, n); cout << \"Sorted array: \"; for (int i = 0; i < n; i++) { cout << arr[i] << \" \"; } cout << endl; return 0; }";
+
 // Function to run when the button is pressed
 const CONFIG = {
-    AIAPI_KEY: 'lol', 
-    AIAPI_HOST: 'https://api.openai.com/v1/chat/completions',
+    // AIAPI_KEY: 'lol', 
+    AIAPI_HOST: 'https://api.openai',
 };
 
 async function getConditionalSteps() {
     const requestData = {
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
-            {
-                role: 'system',
-                content: 'helpful assistant answer thx'
-            },
-            {
-                role: 'user',
-                content: 'whats 2 + 87'
-            }
+        {
+  "role": "system",
+  "content": "You are an assistant that processes code to track comparisons and swaps in sorting algorithms. When the user sends sorting code, you will carefully execute the algorithm line-by-line, and return an array of JSON objects. \n\nFollow these rules exactly: \n1. Track **every comparison** between two items in the array. Use this format: \n   {type: 'compareTwoItems', itemIndex1: 0, itemIndex2: 1, comparisonSign: '>', who: 'hero'}. \n2. Track **every comparison** of an item to a fixed value (like a key or pivot) with: \n   {type: 'compareItemToValue', itemIndex: 0, compareValue: 10, comparisonSign: '>', who: 'hero'}. \n3. Track **every swap** between two array elements with: \n   {type: 'swapTwoItems', itemIndex1: 0, itemIndex2: 1, who: 'hero'}. \n4. Do not skip any steps. Even if no swap is made, still compare all elements as required by the algorithm. \n\nMake sure your output is only the array of JSON events, with no explanations or additional text. Always double-check to ensure all comparisons and swaps are included."
+},
+{
+      "role": "user",
+      "content": "#include <iostream>\nusing namespace std;\n\nvoid insertionSort(int arr[], int n) {\n    for (int i = 1; i < n; i++) {\n        int key = arr[i];\n        int j = i - 1;\n        while (j >= 0 && arr[j] > key) {\n            arr[j + 1] = arr[j];\n            j--;\n        }\n        arr[j + 1] = key;\n    }\n}\n\nint main() {\n    int arr[] = {1, 2, 7, 4, 5, 6, 7, 8, 9};\n    int n = sizeof(arr) / sizeof(arr[0]);\n    insertionSort(arr, n);\n    return 0;\n}"
+    }
         ],
         max_tokens: 100,
         temperature: 0.3
@@ -170,6 +180,12 @@ async function getConditionalSteps() {
 // Add event listener to the button
 const button = document.getElementById("triggerCutsceneButton");
 button.addEventListener("click", getConditionalSteps);
+
+// const triggerButton = document.getElementById("triggerCutsceneButton");
+// triggerButton.addEventListener("click", () => {
+//     // Simulate a click on startCutsceneButton
+//     document.querySelector("#startCutsceneButton").click();
+// });
 
   </script>
 

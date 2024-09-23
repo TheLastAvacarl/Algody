@@ -65,31 +65,22 @@ class Overworld {
   runCutscene() {
     console.log(level);
    this.map.startCutscene([  
-    { type: "checkSorted" },
-    {
-      type: "goToItem",
-      who: "hero", // ID of the character
-      itemIndex: 2 // Index of the item to go to
-  },
-  { type: "checkItemInFront", who:"hero" },
-  { type: "highlight", itemId: "item2" }, 
-    {
-      type: "goToItem",
-      who: "hero", // ID of the character
-      itemIndex: 5 // Index of the item to go to
-  },
-    {
-      type: "goToItem",
-      who: "hero", // ID of the character
-      itemIndex: 9 // Index of the item to go to
-  },
-  
-     { type: "swapPrevious", who: "hero" },
-  // { type: "goToFirstItem", who: "hero" }, // Hero goes to the first item
-  // { type: "goToNextItem", who: "hero" },  // Hero goes to the next item
-  // { type: "goToPreviousItem", who: "hero" } // Hero goes to the previous item
+    { type: "compareTwoItems", who: "hero", itemIndex1: 0, itemIndex2: 1, comparisonSign: "<" },
 
-     
+    { type: "swapTwoItems", who: "hero", itemIndex1: 3, itemIndex2: 4 },
+    { type: "compareTwoItems", who: "hero", itemIndex1: 4, itemIndex2: 5, comparisonSign: ">" },
+    { type: "swapTwoItems", who: "hero", itemIndex1: 4, itemIndex2: 5 },
+
+        { type: "checkSorted" },
+
+    // { type: "swapTwoItems", who: "hero", itemIndex1: 0, itemIndex2: 1 },
+    // { type: "compareTwoItems", who: "hero", itemIndex1: 0, itemIndex2: 1, comparisonSign: "<" },
+    // { type: "highlightIndex", itemIndex: 1 },
+    // { type: "goToItem", who: "hero", itemIndex: 1  },
+    // { type: "foundItem", who: "hero", itemIndex: 2, value: 10 },
+    // { type: "checkSorted" },
+    // {type: "compareItemToValue",itemIndex: 0, compareValue: 10, comparisonSign: "<", who: "hero"},
+
    ]);
   }
  

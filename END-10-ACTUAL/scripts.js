@@ -46,25 +46,6 @@ let isOutputVisible = false;
         let previousOutput = '';
 
 
-        // document.getElementById('toggleOutputButton').addEventListener('click', function() {
-        //     isOutputVisible = !isOutputVisible;
-        //     const outputHeader = document.getElementById('outputHeader');
-        //     const errorOutput = document.getElementById('errorOutput');
-        //     const resultOutput = document.getElementById('resultOutput');
-
-        //     if (isOutputVisible) {
-        //         outputHeader.textContent = 'Output';
-        //         errorOutput.style.display = 'none';
-        //         resultOutput.style.display = 'block';
-        //         resultOutput.textContent = previousOutput; // Show stored output
-        //     } else {
-        //         outputHeader.textContent = 'Error Messages';
-        //         errorOutput.style.display = 'block';
-        //         resultOutput.style.display = 'none';
-        //         errorOutput.textContent = previousError; // Show stored errors
-        //     }
-        // });
-
 
         function getFileContent(files) {
             if (files && files.length > 0) {

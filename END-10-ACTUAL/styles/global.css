@@ -266,16 +266,15 @@ h3 {
 
 
 
+/* 
+bottom containers */
 .container {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin: 20px;
   flex-wrap: wrap;
-}
-.global-indicator-container {
-  width: calc(352px * 3); /* Match the game-wrapper width */
-  margin-bottom: 20px;
+
 }
 
 .output-container {
@@ -284,7 +283,9 @@ h3 {
   overflow: auto;
 }
 
+
 .global-indicator-container {
+  width: calc(352px * 3);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -297,6 +298,12 @@ h3 {
 .global-level-indicator h3 {
   font-size: 24px;
   margin-bottom: 10px;
+}
+
+.global-level-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .global-level-buttons button {
@@ -312,6 +319,16 @@ h3 {
 
 .global-level-buttons button:hover {
   background-color: #0056b3;
+}
+
+.game-speed-container {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+
+#gameSpeed {
+  margin-left: 10px;
 }
 
 .output-container {
