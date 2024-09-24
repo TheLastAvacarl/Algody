@@ -176,7 +176,7 @@ window.OverworldMaps = {
         x: utils.withGrid(4),
         y: utils.withGrid(7),
         src: "images/characters/boxes.png",
-        value: 7,
+        value:7,
       }),
       item3: new Item({
         x: utils.withGrid(5),

@@ -11,19 +11,18 @@ class Sprite {
     this.shadow = new Image();
     this.useShadow = config.useShadow || false;
     if (this.useShadow) {
-      this.shadow.src = config.shadow|| "images/characters/shadow.png";
+      this.shadow.src = config.shadow || "images/characters/shadow.png";
     }
     this.shadow.onload = () => {
       this.isShadowLoaded = true;
     }
-
 
     this.highlighted = false; 
     this.highlightColor = "white"; 
     this.transitionProgress = 0;
 
     // Configure Animation & Initial State
-    this.useAnimation = config.useAnimation || false; // New property
+    this.useAnimation = config.useAnimation || false;
     this.animations = config.animations || {
       "idle-down": [[0, 0]],
       "idle-right": [[0, 1]],
@@ -60,13 +59,11 @@ class Sprite {
 
   updateAnimationProgress() {
     if (this.useAnimation) {
-      // Downtick frame progress
       if (this.animationFrameProgress > 0) {
         this.animationFrameProgress -= 1;
         return;
       }
 
-      // Reset the counter
       this.animationFrameProgress = this.animationFrameLimit;
       this.currentAnimationFrame += 1;
 
@@ -76,45 +73,46 @@ class Sprite {
     }
   }
 
- 
   highlight(color = "white") {
-    this.highlighted = true; // Start highlighting
-    this.highlightColor = color; // Set the initial highlight color
-    this.transitionProgress = 0; // Reset transition progress
+    this.highlighted = true;
+    this.highlightColor = color;
+    this.transitionProgress = 0;
 
-    if (color === "green") {
-      this.transitionToColor("green");
-    } else if (color === "red") {
-      this.transitionToColor("red");
+    const colorMap = {
+      "green": [0, 255, 0],
+      "red": [255, 0, 0],
+      "blue": [0, 0, 255],
+      "yellow": [255, 255, 0],
+      "purple": [128, 0, 128],
+      "cyan": [0, 255, 255],
+      "orange": [255, 165, 0],
+      "pink": [255, 192, 203],
+      "brown": [165, 42, 42],
+      "gray": [128, 128, 128],
+      "white": [255, 255, 255]
+    };
+
+    if (colorMap[color]) {
+      this.transitionToColor(colorMap[color]);
     } else {
-      this.transitionToColor("white");
+      this.transitionToColor(colorMap["white"]);
     }
   }
-  transitionToColor(targetColor) {
-    const transitionDuration = 1000; // 1 second transition
-    this.transitionProgress = 0; // Reset transition progress
-  
+
+  transitionToColor(targetRgb) {
+    const transitionDuration = 1000;
+    this.transitionProgress = 0;
+
     const step = () => {
-      this.transitionProgress += 16; // Approx. 60 FPS
-      const t = Math.min(this.transitionProgress / transitionDuration, 1); // Clamp t to [0, 1]
-  
-      // Determine the target RGB values
-      let targetRgb;
-      if (targetColor === "green") {
-        targetRgb = [0, 255, 0]; // Target green color
-      } else if (targetColor === "red") {
-        targetRgb = [255, 0, 0]; // Target red color
-      } else {
-        targetRgb = [255, 255, 255]; // Default to white
-      }
-  
-      // Interpolate between white (255, 255, 255) and target color
+      this.transitionProgress += 16;
+      const t = Math.min(this.transitionProgress / transitionDuration, 1);
+
       const r = Math.round(255 * (1 - t) + targetRgb[0] * t);
       const g = Math.round(255 * (1 - t) + targetRgb[1] * t);
       const b = Math.round(255 * (1 - t) + targetRgb[2] * t);
-  
-      this.highlightColor = `rgb(${r}, ${g}, ${b})`; // Set the interpolated color
-  
+
+      this.highlightColor = `rgb(${r}, ${g}, ${b})`;
+
       if (this.transitionProgress < transitionDuration) {
         requestAnimationFrame(step);
       }
@@ -125,7 +123,7 @@ class Sprite {
 
   removeHighlight() {
     this.highlighted = false;
-    this.transitionProgress = 0; // Reset progress when removing highlight
+    this.transitionProgress = 0;
   }
 
   draw(ctx) {
@@ -135,7 +133,12 @@ class Sprite {
     if (this.highlighted) {
       ctx.strokeStyle = this.highlightColor;
       ctx.lineWidth = 4;
-      ctx.strokeRect(x, y, 32, 32); // Draw highlight outline
+    
+      const lineY = y + 30;
+      ctx.beginPath();
+      ctx.moveTo(x + 9, lineY);
+      ctx.lineTo(x + 23, lineY);
+      ctx.stroke();
     }
 
     this.isShadowLoaded && ctx.drawImage(this.shadow, x, y);
@@ -149,12 +152,6 @@ class Sprite {
       32, 32
     );
 
-
-
- // Update highlight color if highlighted
-
     this.updateAnimationProgress();
-        // this.updateHighlightColor(); // Update highlight color if highlighted
-
   }
 }

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .game-container {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .game-container:hover {
+            transform: scale(1.05);
+        }
+
+        .game-container img {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .game-container:hover .play-button {
+            background-color: rgb(39, 39, 5);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .game-container:hover .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 30px solid white; 
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+        }
+
+        .play-regular {
+            font-family: "Play", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        .play-bold {
+            font-family: "Play", sans-serif;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        .game-container {
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
+        }
+
+        @keyframes fadeOutIn {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .game-container.animated {
+            animation: fadeOutIn 0.6s ease-in-out;
+        }
+
+    </style>
+</head>
+<body class="bg-white flex flex-col justify-center h-screen relative">
+    <div id="mode" class="easy"></div>
+    <div class="text-5xl font-bold container max-w-full absolute mt-5 mb-10 top-5">
+        <h1 id="level-name" class="text-center">Insertion Sort</h1>
+    </div>
+
+
+    <div class="w-full flex justify-center">
+        <div class="flex justify-end" style="width: 50%">
+            <a href="https://www.algorithmic-odyssey.online/lessons/insertion-sort" target="_blank" id="lesson-button" class=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 text-xl px-5 rounded">
+                Understand Insertion Sort
+            </a>
+        </div>
+    </div>
+    <div class="py-3 px-2 container max-w-full flex justify-center relative">
+        <!--button-->
+        <div class="flex flex-col justify-center">
+            <div class="">
+                <button class="z-50" onclick="previous('easy')">    
+                    <svg class="flex-shrink-0 md:w-10 md:h-10 w-9 h-9 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M12.707 16.293a1 1 0 0 1-1.414 0l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 1.414L8.414 10l4.293 4.293a1 1 0 0 1 0 1.414z"/>
+                    </svg>                    
+                </button>
+            </div>
+        </div>
+        <!--image ewan-->
+        <a id="gameContainer" href="" class="game-container bg-white relative min-w-96 hover:cursor-pointer rounded-lg ml-2" style="width: 50%; background-image: url('./images/level/Untitled.png'); height: 30rem;">
+            <div class="w-full h-full absolute flex-col justify-center flex">
+                <div class="flex justify-center">
+                    <button class="play-button flex flex-col justify-center hover:cursor-pointer relative">
+                        <div class="flex justify-center w-full">
+                            <div class="play-icon"></div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </a>
+        <!--button-->
+        <div class="flex flex-col justify-center">
+            <div class="">
+                <button class="z-40" onclick="next('easy')">    
+                    <svg class="flex-shrink-0 md:w-10 md:h-10 w-9 h-9 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7.293 16.293a1 1 0 0 1 0-1.414L12.586 10 7.293 4.707a1 1 0 0 1 1.414-1.414l6 6a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414 0z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./level_js.js"></script>
+</body>
+</html>

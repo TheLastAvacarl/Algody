@@ -11,7 +11,87 @@
   <link href="styles/GameButtons.css" type="text/css" rel="stylesheet">
 
   <style>
+.modal {
+        position: fixed;
+        left: 0;
+        z-index: 999;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
 
+      .modal.show {
+        display: flex;
+        opacity: 1;
+      }
+
+      .modal-content {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 30px;
+        width: 400px;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-50px);
+        transition: transform 0.4s ease-in-out;
+      }
+
+      .modal.show .modal-content {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 1rem;
+      }
+
+      .modal p {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 2rem;
+      }
+
+      .modal-button {
+        background-color: #0066cc;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .modal-button:hover {
+        background-color: #005bb5;
+      }
+
+      .modal-button:active {
+        background-color: #004999;
+      }
+
+      .modal-footer {
+        margin-top: 20px;
+        font-size: 0.875rem;
+        color: #777;
+      }
+
+      .modal-footer a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+
+      .modal-footer a:hover {
+        text-decoration: underline;
+      }
   </style>
 
 </head>
@@ -97,14 +177,18 @@
   </div>
   <div class="container">
     <div class="global-indicator-container">
-      <div class="global-level-indicator">
-        <h3>Global Level: <span id="globalLevel">1</span></h3>
-        <div class="global-level-buttons">
-          <button id="increaseLevel">Increase</button>
-          <button id="decreaseLevel">Decrease</button>
+      <h3>Global Level: <span id="globalLevel">1</span></h3>
+      <div class="global-level-buttons">
+        <button id="homeButton">Home</button>
+        <button id="hintButton">Hint</button>
+        <button id="infoButton">Info</button>
+        <div class="game-speed-container">
+          <label for="gameSpeed">Game Speed: <span id="gameSpeedValue">1x</span></label>
+          <input type="range" id="gameSpeed" min="1" max="4" value="1" step="1" oninput="updateSpeedValue()">
         </div>
       </div>
     </div>
+    
   
     <div class="output-container">
       <h3 id="outputHeader">Result</h3>
@@ -115,30 +199,48 @@
   </div>
   
   
-  <button id="triggerCutsceneButton">Run Cutscene</button>
+  <button id="request ai to break down code">Run Cutscene</button>
   <button id="startCutsceneButton">Start Cutscene</button>
-
+  <div id="authModal" class="modal">
+    <div class="modal-content">
+      <h2 class="modal-header">Authentication Required</h2>
+      <p>You need to be logged in to access the game.</p>
+      <button id="loginButton" class="modal-button">Login</button>
+      <div class="modal-footer">
+        <p>
+          Don't have an account?
+          <a href="https://your-web-app.com/signup">Sign up here</a>.
+        </p>
+      </div>
+    </div>
+  </div>
   <script>
-
+function updateSpeedValue() {
+  const speedSlider = document.getElementById('gameSpeed');
+  const speedValueDisplay = document.getElementById('gameSpeedValue');
+  speedValueDisplay.textContent = speedSlider.value + 'x';
+}
     
+const prompts = "Please take the following code and break it down into an array of events. Capture every single step, comparison, swap, and iteration in detail, specifying the type of event, the actor involved, the indices of the items being compared or swapped, and any relevant conditions or results. The output should only be the array of events, and checkSorted should always be the last step. The events should reflect the code. every last bit. Types of Events: { type: 'swapTwoItems', who: 'hero', itemIndex1: 0, itemIndex2: 1 } { type: 'compareTwoItems', who: 'hero', itemIndex1: 0, itemIndex2: 1, comparisonSign: '<' } { type: 'goToItem', who: 'hero', itemIndex: 1 } { type: 'checkSorted' } (last step). Here is the code to analyze: #include <iostream> using namespace std; void insertionSort(int arr[], int n) { for (int i = 1; i < n; i++) { int key = arr[i]; int j = i - 1; // Move elements of arr[0..i-1], that are greater than key, // to one position ahead of their current position while (j >= 0 && arr[j] > key) { arr[j + 1] = arr[j]; j--; } arr[j + 1] = key; } } int main() { int arr[] = {1, 2, 7, 4, 5, 6, 7, 8, 9}; int n = sizeof(arr) / sizeof(arr[0]); insertionSort(arr, n); cout << \"Sorted array: \"; for (int i = 0; i < n; i++) { cout << arr[i] << \" \"; } cout << endl; return 0; }";
+
 // Function to run when the button is pressed
 const CONFIG = {
     AIAPI_KEY: 'lol', 
-    AIAPI_HOST: 'https://api.openai.com/v1/chat/completions',
+    AIAPI_HOST: 'https://api.openai',
 };
 
 async function getConditionalSteps() {
     const requestData = {
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
-            {
-                role: 'system',
-                content: 'helpful assistant answer thx'
-            },
-            {
-                role: 'user',
-                content: 'whats 2 + 87'
-            }
+        {
+  "role": "system",
+  "content": "You are an assistant that will be breaking down some code into steps for users"
+},
+{
+      "role": "user",
+      "content": ""
+    }
         ],
         max_tokens: 100,
         temperature: 0.3
@@ -168,7 +270,7 @@ async function getConditionalSteps() {
 }
 
 // Add event listener to the button
-const button = document.getElementById("triggerCutsceneButton");
+const button = document.getElementById("request ai to break down code");
 button.addEventListener("click", getConditionalSteps);
 
   </script>

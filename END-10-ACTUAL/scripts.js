@@ -16,12 +16,9 @@ let data;
     php: ['==', '!=', '<', '>', '<=', '>=', '&&', '||']
 }
 
-
-
 document.getElementById('drawerToggle').addEventListener('click', function() {
     const drawer = document.querySelector('.drawer');
     const isClosed = drawer.classList.toggle('closed');
-
     if (isClosed) {
         drawer.style.transform = 'translateX(-200px)';
     } else {
@@ -37,52 +34,34 @@ document.getElementById('runButton').addEventListener('click', function() {
     iframe.contentWindow.postMessage({
         eventType: 'triggerRun'
     }, "*");
-    
     isRunInitiated = true; // Set flag to true when run is initiated
 });
 
-let isOutputVisible = false;
+
+
+        let codeContent = ""; //codeContent to check
+        let isOutputVisible = false;
         let previousError = '';
         let previousOutput = '';
 
-
-        // document.getElementById('toggleOutputButton').addEventListener('click', function() {
-        //     isOutputVisible = !isOutputVisible;
-        //     const outputHeader = document.getElementById('outputHeader');
-        //     const errorOutput = document.getElementById('errorOutput');
-        //     const resultOutput = document.getElementById('resultOutput');
-
-        //     if (isOutputVisible) {
-        //         outputHeader.textContent = 'Output';
-        //         errorOutput.style.display = 'none';
-        //         resultOutput.style.display = 'block';
-        //         resultOutput.textContent = previousOutput; // Show stored output
-        //     } else {
-        //         outputHeader.textContent = 'Error Messages';
-        //         errorOutput.style.display = 'block';
-        //         resultOutput.style.display = 'none';
-        //         errorOutput.textContent = previousError; // Show stored errors
-        //     }
-        // });
-
-
         function getFileContent(files) {
             if (files && files.length > 0) {
-                const fileContent = files[0].content;
-                console.log('File content:', fileContent);
+                codeContent = files[0].content;
+                console.log('File content:', codeContent);
             } else {
                 console.log('No files available.');
             }
         }
 
 
+        let actions;
+
         window.onmessage = function (e) {
             console.log('Received message:', e.data);
-            
             if (e.data && e.data.language) {
                 console.log('Detected language change:', e.data.language);
             }
-        
+
             if (e.data.action === 'runComplete' && isRunInitiated) {
                 const outputHeader = document.getElementById('outputHeader');
                 const errorOutput = document.getElementById('errorOutput');
@@ -100,6 +79,13 @@ let isOutputVisible = false;
                     errorOutput.style.display = 'none';
                     resultOutput.style.display = 'block';
                     resultOutput.textContent = previousOutput; // Show output
+                    // console.log (codeContent);
+                    transformCode();
+                    runcode(codeToBreakDown);
+                    actions =  transformIndexArray(indexArray);
+
+                    document.querySelector("#startCutsceneButton").click();
+
                 } else {
                     // Reset the output when there's an error
                     previousOutput = ''; // Clear previous output
@@ -114,6 +100,131 @@ let isOutputVisible = false;
             }
         };
 
+
+
+        
+
+
+
+    
+        let indexArray = [];
+
+
+        function transformCode(){
+            code = codeContent; // Get user input
+
+            // Regex patterns to find if statements and dynamic swap assignments
+            const ifPattern = /if\s*\((.*?)\)\s*{/g; // Regex to find 'if' statements and capture the condition
+            const swapPattern = /(\[arr\[(.*?)\],\s*arr\[(.*?)\]\]\s*=\s*\[arr\[(.*?)\],\s*arr\[(.*?)\]\];?|arr\[(.*?)\]\s*=\s*arr\[(.*?)\s*([+-]?\d+)?\];?)/g; // Combined regex for swapping assignments
+        
+            // Array to store the indices and signs
+            
+        
+            function transformLog(input) {
+                return input.replace(/console\.log\("([^"]*) \((arr\[(.*?)\]|([a-zA-Z_]\w*|\d+)) ([<>=!]{1,2}=?) (arr\[(.*?)\]|([a-zA-Z_]\w*|\d+))\)"/, 
+                    (match, message, firstArr, firstIndex, firstValue, operator, secondArr, secondIndex, secondValue) => {
+                        // Capture either the index or the value itself for index1 and index2
+                        const index1 = firstArr ? firstIndex : firstValue; // If array, use index, otherwise use value
+                        const index2 = secondArr ? secondIndex : secondValue; // If array, use index, otherwise use value
+        
+                        // Return the transformed console.log statement with index pushing logic as text
+                        return `console.log("${message}", ${firstArr || firstValue}, "${operator}", ${secondArr || secondValue});\nindexArray.push({ index1: ${index1}, index2: ${index2 || secondValue}, sign: "${operator}" }`;
+                    });
+            }
+        
+            function transformSwapLog(input) {
+                return input.replace(/console\.log\("Swapping: \[?arr\[(.*?)\]\]?(?:, arr\[(.*?)\])? = \[?arr\[(.*?)\]\]?(?:, arr\[(.*?)\])?;"/,
+                    (match, first, second, third, fourth) => {
+                        // Return the transformed console.log statement with index pushing logic as text
+                        return `console.log("Swapping:", arr[${first}], arr[${third}]);\nindexArray.push({ index1: ${first}, index2: ${third} }`;
+                    });
+            }
+        
+            // Modify the code by inserting console.log statements
+            const modifiedCode = code
+                .replace(ifPattern, (match, condition) => {
+                    // Add console.log before the if statement
+                    return `console.log("Running if (${condition.trim()})"); ${match}`;
+                })
+                .replace(swapPattern, (match) => {
+                    // Log the entire swap statement
+                    return `console.log("Swapping: ${match.trim()}"); ${match}`;
+                });
+        
+            // Transform logs for if statements and swaps
+            const transformedCode = transformLog(modifiedCode);
+            const fullyTransformedCode = transformSwapLog(transformedCode);
+        
+            // // Output the modified code
+            // output.innerHTML = "<strong>Modified Code:</strong><br><pre>" + fullyTransformedCode + "</pre><br>";
+            codeToBreakDown = fullyTransformedCode;
+            console.log(fullyTransformedCode);
+        
+            // Execute the modified code in a safe context
+            try {
+                const sortFunction = new Function('arr', fullyTransformedCode + ' return arr;');
+                const sampleArray = [64, 34, 25, 12, 22, 11, 90]; // Example array
+                const sortedArray = sortFunction(sampleArray);
+                
+                // output.innerHTML += `<strong>Sorted Array:</strong> ${sortedArray.join(', ')}<br>`;
+            } catch (error) {
+                console.error("Error executing modified code:", error);
+                // output.innerHTML += "Error executing modified code. Check the console for details.";
+            }
+        }
+        let codeToBreakDown;
+
+
+
+        function runcode(code) {
+            try {
+                eval(code);
+                
+        
+                // Log every index of indexArray
+                indexArray.forEach((value, index) => {
+                    console.log(`Index: ${index}, Value: ${value}`);
+                });
+
+        
+            } catch (error) {
+                console.error("Error executing code:", error);
+            }
+        }
+        
+
+
+        // Define the transformation function
+function transformIndexArray(indexArray) {
+    return indexArray.map(item => {
+      const { index1, index2, sign } = item;
+      const output = { who: "hero" };
+  
+      if (sign) {
+        if (sign === "<") {
+          return { ...output, type: "compareTwoItems", itemIndex1: index1, itemIndex2: index2, comparisonSign: "<" };
+        } else {
+          return { ...output, type: "compareTwoItems", itemIndex1: index1, itemIndex2: index2, comparisonSign: ">" };
+        }
+      } else {
+        // No sign means swapTwoItems
+        return { ...output, type: "swapTwoItems", itemIndex1: index1, itemIndex2: index2 };
+      }
+    }).flatMap(item => {
+      if (item.type === "compareTwoItems") {
+        const compareValue = Math.max(item.itemIndex1, item.itemIndex2);
+        if (compareValue > 9) {
+          return [{ type: "compareItemToValue", itemIndex: item.itemIndex1, compareValue: compareValue, comparisonSign: "<", who: "hero" }];
+        }
+      }
+      return item;
+    });
+  }
+
+
+
+
+        
 function displayError(error) {
     const errorOutput = document.getElementById('errorOutput');
     errorOutput.textContent = error; // Display the error message
@@ -163,7 +274,11 @@ function updateLanguage(language, level) {
         }
 
 
-        function getSampleCode(language, level) {
+
+
+
+        
+    function getSampleCode(language, level) {
     switch (language) {
         case 'php':
             return level === 1 ? "<?php\n    echo 'Hello World!';\n?>" :
@@ -188,12 +303,7 @@ function updateLanguage(language, level) {
         default:
             return '';
     }
-
-
-    
 }
-
-  
 
 
         function allowDrop(event) {
@@ -237,6 +347,10 @@ function updateLanguage(language, level) {
             // Hide the indicator and dropzone after drop
             resetDropzone();
         }
+
+
+
+
 
         function resetDropzone() {
             indicator.style.display = 'none';
