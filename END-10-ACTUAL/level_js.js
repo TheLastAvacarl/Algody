@@ -33,9 +33,13 @@ let index = 0
 // ilalagay nalang yung ginawang seassion dito ni ronnie samay backend
 temp_userID = 'id'
 
-function get_user_data(temp_userID){
+async function get_user_data(temp_userID){
     let request = new XMLHttpRequest()
-    request.open('GET', 'http://localhost:3000/api/game')
+    // request.open('GET', 'http://localhost:3000/api/game')
+
+    const res = await fetch('http://localhost:3000/api/game');
+  const data= await kekw.json()
+  console.log(data, "SAMPLE DATAA")
     request.setRequestHeader('Content-type', 'application/json')
     
     request.onload = () => {
