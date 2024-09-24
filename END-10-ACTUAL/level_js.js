@@ -33,7 +33,7 @@ window.onload = async function () {
     const data = await fetch("http://localhost:5000/api/users");
     const {users}= await data.json();
     const {session} = users
-    current_user_level = 2
+    current_user_level = users.user.level
 };
 
 
