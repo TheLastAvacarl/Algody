@@ -15,24 +15,32 @@ const level_link = [
 
 //palitan nalang din yung image path
 const image_path = [
-    './images/level/Untitled.png', './images/level/Untitled.png', './images/level/Untitled.png', './images/level/Untitled.png',
+    './images/level/Untitled.png', './images/level/2.png', './images/level/3.png', './images/level/4.png',
     './images/level/Untitled.png', './images/level/Untitled.png', './images/level/Untitled.png', './images/level/Untitled.png',
     './images/level/Untitled.png', './images/level/Untitled.png', './images/level/Untitled.png', './images/level/Untitled.png',
 ]
 
 //lagay dito yung link ng kada level check nalang yung level na array para alam yung pag kakasunod
 let game_link = [
-    'http://127.0.0.1:5500/index.html?level=1', 'http://127.0.0.1:5500/index.html?level=2', 'http://127.0.0.1:5500/index.html?level=3', 'http://127.0.0.1:5500/index.html?level=4',
-    'http://127.0.0.1:5500/index.html?level=5', 'http://127.0.0.1:5500/index.html?level=6', 'http://127.0.0.1:5500/index.html?level=7', 'http://127.0.0.1:5500/index.html?level=8',
-    'http://127.0.0.1:5500/index.html?level=9', 'http://127.0.0.1:5500/index.html?level=10', 'http://127.0.0.1:5500/index.html?level=11', 'http://127.0.0.1:5500/index.html?level=12',
+    '/END-10-ACTUAL/index.html?level=1', '/END-10-ACTUAL/index.html?level=2', '/END-10-ACTUAL/index.html?level=3', '/END-10-ACTUAL/index.html?level=4',
+    '/END-10-ACTUAL/index.html?level=5', '/END-10-ACTUAL/index.html?level=6', '/END-10-ACTUAL/index.html?level=7', '/END-10-ACTUAL/index.html?level=8',
+    '/END-10-ACTUAL/index.html?level=9', '/END-10-ACTUAL/index.html?level=10', '/END-10-ACTUAL/index.html?level=11', '/END-10-ACTUAL/index.html?level=12',
 ]
 const mode = document.querySelector('#mode')
+
+let temp_userID
+window.onload = async function () {
+    const data = await fetch("http://localhost:5000/api/users");
+    const {users}= await data.json();
+    const {session} = users
+    temp_userID = users.user.id
+};
+
+
 
 let index = 0
 
 // ilalagay nalang yung ginawang seassion dito ni ronnie samay backend
-temp_userID = 'clyhe6qzi0008mt3yirere3cq'
-
 async function get_user_data(temp_userID) {
     const response = await fetch('http://localhost:3000/api/game');
     const data = await response.json();
@@ -41,13 +49,16 @@ async function get_user_data(temp_userID) {
 
 let current_user_level
 get_user_data(temp_userID)
-    .then(async data => {
-        await Promise.all(data.users.map(async user => {
-            if (user.id == temp_userID) {
-                current_user_level = user.level;
-                console.log(user.level);
-            }
-        }));
+    .then(data => {
+        setTimeout(() => {
+            Promise.all(data.users.map(async user => {
+                console.log(temp_userID)
+                if (user.id == temp_userID) {
+                    current_user_level = user.level;
+                    console.log(user.level);
+                }
+            }));
+        }, 600);
     })
     .catch(error => console.error('Error fetching data:', error));
 
@@ -158,4 +169,3 @@ function previous(mode){
         }
     }
 }
-
