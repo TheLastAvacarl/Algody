@@ -9,6 +9,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        .lock-icon {
+            width: 60px; 
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lock-icon svg {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .game-container:hover .lock-icon {
+            /* Add any hover effects for the lock icon here */
+            transform: scale(1.1); /* Example effect */
+        }
+
+
         .game-container {
             transition: transform 0.3s ease-in-out;
         }
@@ -105,8 +123,18 @@
         <!--image ewan-->
         <a id="gameContainer" href="" class="game-container bg-white relative min-w-96 hover:cursor-pointer rounded-lg ml-2" style="width: 50%; background-image: url('./images/level/Untitled.png'); height: 30rem;">
             <div class="w-full h-full absolute flex-col justify-center flex">
-                <div class="flex justify-center">
-                    <button class="play-button flex flex-col justify-center hover:cursor-pointer relative">
+                <div id="icon container" class="flex justify-center">
+                    <button id="lock_button" class="play-button hidden flex-col justify-center hover:cursor-pointer relative">
+                        <div class="flex justify-center w-full">
+                            <div class="lock-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100px" height="100px">
+                                    <path d="M12 2a4 4 0 0 1 4 4v2h-8V6a4 4 0 0 1 4-4zm6 6v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8h12z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button id="play_button" class="play-button flex flex-col justify-center hover:cursor-pointer relative">
                         <div class="flex justify-center w-full">
                             <div class="play-icon"></div>
                         </div>

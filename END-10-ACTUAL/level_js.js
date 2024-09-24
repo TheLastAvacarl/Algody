@@ -21,7 +21,7 @@ const image_path = [
 ]
 
 //lagay dito yung link ng kada level check nalang yung level na array para alam yung pag kakasunod
-const game_link = [
+let game_link = [
     'http://127.0.0.1:5500/index.html?level=1', 'http://127.0.0.1:5500/index.html?level=2', 'http://127.0.0.1:5500/index.html?level=3', 'http://127.0.0.1:5500/index.html?level=4',
     'http://127.0.0.1:5500/index.html?level=5', 'http://127.0.0.1:5500/index.html?level=6', 'http://127.0.0.1:5500/index.html?level=7', 'http://127.0.0.1:5500/index.html?level=8',
     'http://127.0.0.1:5500/index.html?level=9', 'http://127.0.0.1:5500/index.html?level=10', 'http://127.0.0.1:5500/index.html?level=11', 'http://127.0.0.1:5500/index.html?level=12',
@@ -31,29 +31,25 @@ const mode = document.querySelector('#mode')
 let index = 0
 
 // ilalagay nalang yung ginawang seassion dito ni ronnie samay backend
-temp_userID = 'id'
+temp_userID = 'clyhe6qzi0008mt3yirere3cq'
 
-async function get_user_data(temp_userID){
-    let request = new XMLHttpRequest()
-    // request.open('GET', 'http://localhost:3000/api/game')
-
-    const res = await fetch('http://localhost:3000/api/game');
-  const data= await kekw.json()
-  console.log(data, "SAMPLE DATAA")
-    request.setRequestHeader('Content-type', 'application/json')
-    
-    request.onload = () => {
-        const datas = JSON.parse(request.responseText);
-        datas.forEach(data => {
-            console.log('1')
-            console.log(data)
-        })
-    }
-
-    request.send()
+async function get_user_data(temp_userID) {
+    const response = await fetch('http://localhost:3000/api/game');
+    const data = await response.json();
+    return data;
 }
 
+let current_user_level
 get_user_data(temp_userID)
+    .then(async data => {
+        await Promise.all(data.users.map(async user => {
+            if (user.id == temp_userID) {
+                current_user_level = user.level;
+                console.log(user.level);
+            }
+        }));
+    })
+    .catch(error => console.error('Error fetching data:', error));
 
 
 if (mode.classList.contains('easy')){
@@ -73,6 +69,13 @@ if (mode.classList.contains('easy')){
     }
 }
 
+setTimeout(() => {
+    console.log(current_user_level)
+    num = 0
+    play_icon_to_lock(index)
+}, 500); 
+
+
 function change(index){
     const gameContainer = document.getElementById('gameContainer');
     gameContainer.classList.add('animated');
@@ -88,21 +91,48 @@ function change(index){
     }, 600);
 }
 
+
+const play = document.querySelector('#play_button')
+const lock = document.querySelector('#lock_button')
+
+function play_icon_to_lock(index){
+    if (index  > current_user_level - 1){
+        gameContainer.href = '#level-name'
+        play.classList.replace('flex', 'hidden')
+        lock.classList.replace('hidden', 'flex')
+    }
+}
+
+
+function lock_to_play_icon(index){
+    if (index  < current_user_level){
+        gameContainer.href = game_link[index]
+        lock.classList.replace('flex', 'hidden')
+        play.classList.replace('hidden', 'flex')
+    }else if(index  > current_user_level - 1){
+        gameContainer.href = '#level-name'
+    }
+}
+
+
 function next(mode){
     if (mode == 'easy'){
         if (index <= 2){
             index += 1
             change(index)
+            play_icon_to_lock(index)
         }
     }else if(mode == 'medium'){
         if (index <= 6){
             index += 1
             change(index)
+            play_icon_to_lock(index)
         }
     }else if(mode == 'hard'){
         if (index <= 10){
             index += 1
             change(index)
+            play_icon_to_lock(index)
         }
     }
 }
@@ -112,16 +142,19 @@ function previous(mode){
         if (index >= 1){
             index -= 1
             change(index)
+            lock_to_play_icon(index)
         }
     }else if(mode == 'medium'){
         if (index >= 5){
             index -= 1
             change(index)
+            lock_to_play_icon(index)
         }
     }else if(mode == 'hard'){
         if (index >= 9){
             index -= 1
             change(index)
+            lock_to_play_icon(index)
         }
     }
 }
