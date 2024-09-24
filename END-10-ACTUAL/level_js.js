@@ -22,13 +22,35 @@ const image_path = [
 
 //lagay dito yung link ng kada level check nalang yung level na array para alam yung pag kakasunod
 const game_link = [
-    'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=1', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=2', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=3', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=4',
-    'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=5', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=6', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=7', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=8',
-    'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=9', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=10', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=11', 'http://127.0.0.1:5500/END-10-ACTUAL/index.html?level=12',
+    'http://127.0.0.1:5500/index.html?level=1', 'http://127.0.0.1:5500/index.html?level=2', 'http://127.0.0.1:5500/index.html?level=3', 'http://127.0.0.1:5500/index.html?level=4',
+    'http://127.0.0.1:5500/index.html?level=5', 'http://127.0.0.1:5500/index.html?level=6', 'http://127.0.0.1:5500/index.html?level=7', 'http://127.0.0.1:5500/index.html?level=8',
+    'http://127.0.0.1:5500/index.html?level=9', 'http://127.0.0.1:5500/index.html?level=10', 'http://127.0.0.1:5500/index.html?level=11', 'http://127.0.0.1:5500/index.html?level=12',
 ]
 const mode = document.querySelector('#mode')
 
 let index = 0
+
+// ilalagay nalang yung ginawang seassion dito ni ronnie samay backend
+temp_userID = 'id'
+
+function get_user_data(temp_userID){
+    let request = new XMLHttpRequest()
+    request.open('GET', 'http://localhost:3000/api/game')
+    request.setRequestHeader('Content-type', 'application/json')
+    
+    request.onload = () => {
+        const datas = JSON.parse(request.responseText);
+        datas.forEach(data => {
+            console.log('1')
+            console.log(data)
+        })
+    }
+
+    request.send()
+}
+
+get_user_data(temp_userID)
+
 
 if (mode.classList.contains('easy')){
     if (index == 0){

@@ -12,6 +12,7 @@ const allowedOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:5500', // Add more origins as needed
 ];
+
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
