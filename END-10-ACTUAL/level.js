@@ -7,7 +7,7 @@ window.onload = async function () {
     const data = await fetch("http://localhost:5000/api/users");
     const {users}= await data.json();
     const {session} = users
-    current_user_level = 7
+    current_user_level = users.user.level
 
     if (current_user_level - 1 <= 3 ){
         completedLevel = 0
