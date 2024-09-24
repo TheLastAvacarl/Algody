@@ -368,7 +368,7 @@ function updateLanguage(language, level) {
                 window.removeEventListener('message', handleIncomingMessage);
             }
         }
-
+        /// HEREEE !!!
         function updateCompilerContent(content) {
             console.log("wow updated");
             if (content) {
