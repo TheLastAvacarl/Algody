@@ -4,10 +4,6 @@ let completedLevel = 0; // Track the highest completed level as an integer
 
 document.addEventListener("DOMContentLoaded", () => {
 
-
-    // localStorage.removeItem('completedLevel');
-
-        // Get the highest completed level from local storage
     const storedCompletedLevel = JSON.parse(localStorage.getItem('completedLevel'));
     
     if (storedCompletedLevel !== null) {
@@ -21,8 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Call updateLevelDisplay initially
     updateLevelDisplay();
 });
-
-
 
 
 // Function to retrieve the level from the URL
@@ -40,10 +34,14 @@ if (isNaN(level) && !window.location.pathname.includes('home.html')) {
     window.location.href = 'home.html';
 }
 
+const game_select = [
+    './easy.html', './medium.html', './hard.html'
+]
+
 function setLevel(selectedLevel) {
     // Check if the selected level is allowed
     if (selectedLevel <= completedLevel + 1) {
-        window.location.href = `index.html?level=${selectedLevel}`;
+        window.location.href = game_select[selectedLevel - 1];
     } else {
         alert("You must complete the previous level first!");
     }
