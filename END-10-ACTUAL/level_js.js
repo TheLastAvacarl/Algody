@@ -28,40 +28,16 @@ let game_link = [
 ]
 const mode = document.querySelector('#mode')
 
-let temp_userID
+let current_user_level
 window.onload = async function () {
     const data = await fetch("http://localhost:5000/api/users");
     const {users}= await data.json();
     const {session} = users
-    temp_userID = users.user.id
+    current_user_level = 2
 };
 
 
-
 let index = 0
-
-// ilalagay nalang yung ginawang seassion dito ni ronnie samay backend
-async function get_user_data(temp_userID) {
-    const response = await fetch('http://localhost:3000/api/game');
-    const data = await response.json();
-    return data;
-}
-
-let current_user_level
-get_user_data(temp_userID)
-    .then(data => {
-        setTimeout(() => {
-            Promise.all(data.users.map(async user => {
-                console.log(temp_userID)
-                if (user.id == temp_userID) {
-                    current_user_level = user.level;
-                    console.log(user.level);
-                }
-            }));
-        }, 600);
-    })
-    .catch(error => console.error('Error fetching data:', error));
-
 
 if (mode.classList.contains('easy')){
     if (index == 0){
