@@ -1,9 +1,42 @@
 let level;
 let currentLevel;
+let current_user_level
 let completedLevel = 0; // Track the highest completed level as an integer
 
-document.addEventListener("DOMContentLoaded", () => {
+window.onload = async function () {
+    const data = await fetch("http://localhost:5000/api/users");
+    const {users}= await data.json();
+    const {session} = users
+    current_user_level = users.user.level
 
+    if (current_user_level - 1 <= 3 ){
+        completedLevel = 0
+    }else if (current_user_level - 1 <= 8 ){
+        completedLevel = 1
+    }else if (current_user_level - 1 <= 11 ){
+        completedLevel = 2
+    }
+
+    const storedCompletedLevel = JSON.parse(localStorage.getItem('completedLevel'));
+    
+    if (storedCompletedLevel !== null) {
+        completedLevel = storedCompletedLevel;
+        console.log("Retrieved completed level:", completedLevel);
+
+    } else {
+        console.log("No completed level found.");
+    }
+
+    updateLevelDisplay();
+};
+
+setTimeout(() => {
+    console.log(current_user_level)
+}, 500); 
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    console.log(current_user_level)
     const storedCompletedLevel = JSON.parse(localStorage.getItem('completedLevel'));
     
     if (storedCompletedLevel !== null) {
